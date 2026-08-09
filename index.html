@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Estoque Geral de Armação</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: #f2f3f5;
+    color: #1a1a1a;
+    padding-bottom: 40px;
+  }
+  header {
+    background: #14315e;
+    color: #fff;
+    padding: 18px 16px 14px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 2px;
+    font-size: 19px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    margin: 0;
+    font-size: 12.5px;
+    opacity: 0.85;
+  }
+  .container { padding: 14px; max-width: 640px; margin: 0 auto; }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+    color: #14315e;
+    border-left: 4px solid #14315e;
+    padding-left: 8px;
+  }
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin: 10px 0 4px;
+    color: #333;
+  }
+  input[type="text"], input[type="date"], textarea, select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fafafa;
+    resize: vertical;
+  }
+  textarea { min-height: 44px; }
+  .hint { font-size: 11px; color: #888; margin-top: 2px; }
+  .row2 { display: flex; gap: 10px; }
+  .row2 > div { flex: 1; }
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .btn-add { background: #14315e; color: #fff; }
+  .btn-pdf { background: #1c7c3f; color: #fff; }
+  .btn-share { background: #0a66c2; color: #fff; }
+  .btn-clear { background: #b3261e; color: #fff; }
+  .btn:active { opacity: 0.85; }
+  .product-item {
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+    padding: 10px 100px 10px 12px;
+    margin-bottom: 8px;
+    background: #fbfbfb;
+    position: relative;
+    font-size: 13px;
+  }
+  .product-item b { color: #14315e; }
+  .item-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 84px;
+  }
+  .item-actions button {
+    border: none;
+    border-radius: 7px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 7px 4px;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+  }
+  .item-actions .btn-del { background: #b3261e; }
+  .item-actions .btn-edit { background: #0a66c2; }
+  .product-item.editing {
+    border: 2px solid #0a66c2;
+    background: #eef5ff;
+  }
+  .empty-msg { color: #999; font-size: 13px; text-align: center; padding: 10px 0; }
+  .field-line { margin: 2px 0; white-space: pre-wrap; }
+  .status {
+    text-align: center;
+    font-size: 12.5px;
+    color: #1c7c3f;
+    margin-top: 8px;
+    min-height: 16px;
+  }
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    margin-top: 18px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ESTOQUE GERAL DE ARMAÇÃO</h1>
+  <p>INDCON Pré-Moldados · Controle diário</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Data do Relatório</h2>
+    <label for="reportDate">Data</label>
+    <input type="date" id="reportDate">
+  </div>
+
+  <div class="card">
+    <h2>Adicionar Produto</h2>
+
+    <label for="produto">Produto</label>
+    <textarea id="produto" placeholder="Ex: Tubo de concreto&#10;40 x 100 cm&#10;60 x 100 cm"></textarea>
+
+    <div class="row2">
+      <div>
+        <label for="classe">Classe</label>
+        <input type="text" id="classe" placeholder="Ex: MF">
+      </div>
+      <div>
+        <label for="cliente">Cliente</label>
+        <input type="text" id="cliente" placeholder="Ex: ALPHA">
+      </div>
+    </div>
+
+    <label for="pedido">Pedido</label>
+    <textarea id="pedido" placeholder="Ex: 1548&#10;1402&#10;823"></textarea>
+    <div class="hint">Use uma linha por item, alinhado com o Produto.</div>
+
+    <div class="row2">
+      <div>
+        <label for="armado">Armado</label>
+        <textarea id="armado" placeholder="Ex: 112&#10;—"></textarea>
+      </div>
+      <div>
+        <label for="aarmar">A Armar</label>
+        <textarea id="aarmar" placeholder="Ex: 1508&#10;823"></textarea>
+      </div>
+    </div>
+
+    <label for="estoque">Estoque</label>
+    <textarea id="estoque" placeholder="Ex: 1390&#10;—"></textarea>
+
+    <label for="obs">OBS</label>
+    <textarea id="obs" placeholder="Observações (opcional)"></textarea>
+
+    <button class="btn btn-add" id="addBtn" onclick="addProduct()">+ Adicionar Produto</button>
+    <div id="cancelEditWrap" style="display:none; text-align:center; margin-top:8px;">
+      <a href="#" onclick="cancelEdit(); return false;" style="font-size:12.5px; color:#b3261e; text-decoration:underline;">Cancelar edição</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Produtos Adicionados (<span id="countBadge">0</span>)</h2>
+    <div id="productList"><div class="empty-msg">Nenhum produto adicionado ainda.</div></div>
+  </div>
+
+  <button class="btn btn-pdf" onclick="gerarPDF(false)">📄 Gerar PDF</button>
+  <button class="btn btn-share" onclick="gerarPDF(true)">📤 Compartilhar PDF</button>
+  <button class="btn btn-clear" onclick="limparTudo()">🗑 Limpar Tudo</button>
+  <div class="status" id="statusMsg"></div>
+
+  <div class="footer-note">Responsável: José Mivânio de Carvalho · Coordenador de Equipe</div>
+</div>
+
+<script>
+let products = [];
+let editingIndex = null;
+
+function addProduct() {
+  const produto = document.getElementById('produto').value.trim();
+  const classe = document.getElementById('classe').value.trim();
+  const cliente = document.getElementById('cliente').value.trim();
+  const pedido = document.getElementById('pedido').value.trim();
+  const armado = document.getElementById('armado').value.trim();
+  const aarmar = document.getElementById('aarmar').value.trim();
+  const estoque = document.getElementById('estoque').value.trim();
+  const obs = document.getElementById('obs').value.trim();
+
+  if (!produto || !cliente) {
+    alert('Preencha ao menos "Produto" e "Cliente".');
+    return;
+  }
+
+  const data = { produto, classe, cliente, pedido, armado, aarmar, estoque, obs };
+
+  if (editingIndex !== null) {
+    products[editingIndex] = data;
+    editingIndex = null;
+    setAddButtonToDefault();
+  } else {
+    products.push(data);
+  }
+
+  ['produto','classe','cliente','pedido','armado','aarmar','estoque','obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  renderList();
+  document.getElementById('produto').focus();
+}
+
+function editProduct(index) {
+  const p = products[index];
+  document.getElementById('produto').value = p.produto;
+  document.getElementById('classe').value = p.classe;
+  document.getElementById('cliente').value = p.cliente;
+  document.getElementById('pedido').value = p.pedido;
+  document.getElementById('armado').value = p.armado;
+  document.getElementById('aarmar').value = p.aarmar;
+  document.getElementById('estoque').value = p.estoque;
+  document.getElementById('obs').value = p.obs;
+
+  editingIndex = index;
+  const btn = document.getElementById('addBtn');
+  btn.textContent = '💾 Salvar Alterações';
+  btn.style.background = '#0a66c2';
+  document.getElementById('cancelEditWrap').style.display = 'block';
+
+  document.getElementById('produto').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  renderList();
+}
+
+function setAddButtonToDefault() {
+  const btn = document.getElementById('addBtn');
+  btn.textContent = '+ Adicionar Produto';
+  btn.style.background = '';
+  document.getElementById('cancelEditWrap').style.display = 'none';
+}
+
+function cancelEdit() {
+  editingIndex = null;
+  setAddButtonToDefault();
+  ['produto','classe','cliente','pedido','armado','aarmar','estoque','obs'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  renderList();
+}
+
+function removeProduct(index) {
+  const p = products[index];
+  const confirmMsg = `Tem certeza que deseja apagar o produto "${p.produto.split('\n')[0]}"?`;
+  if (!confirm(confirmMsg)) return;
+
+  products.splice(index, 1);
+
+  if (editingIndex === index) {
+    cancelEdit();
+  } else {
+    if (editingIndex !== null && index < editingIndex) editingIndex--;
+    renderList();
+  }
+}
+
+function renderList() {
+  const list = document.getElementById('productList');
+  document.getElementById('countBadge').textContent = products.length;
+
+  if (products.length === 0) {
+    list.innerHTML = '<div class="empty-msg">Nenhum produto adicionado ainda.</div>';
+    return;
+  }
+
+  list.innerHTML = products.map((p, i) => `
+    <div class="product-item${editingIndex === i ? ' editing' : ''}">
+      <div class="item-actions">
+        <button class="btn-edit" onclick="editProduct(${i})">✏️ Editar</button>
+        <button class="btn-del" onclick="removeProduct(${i})">🗑 Apagar</button>
+      </div>
+      <div class="field-line"><b>${escapeHtml(p.produto)}</b></div>
+      <div class="field-line">Classe: ${escapeHtml(p.classe) || '-'} &nbsp;|&nbsp; Cliente: ${escapeHtml(p.cliente)}</div>
+      <div class="field-line">Pedido: ${escapeHtml(p.pedido) || '-'}</div>
+      <div class="field-line">Armado: ${escapeHtml(p.armado) || '-'} &nbsp;|&nbsp; A Armar: ${escapeHtml(p.aarmar) || '-'}</div>
+      <div class="field-line">Estoque: ${escapeHtml(p.estoque) || '-'}</div>
+      ${p.obs ? `<div class="field-line">Obs: ${escapeHtml(p.obs)}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  return (str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function limparTudo() {
+  if (products.length && !confirm('Remover todos os produtos adicionados?')) return;
+  products = [];
+  renderList();
+  document.getElementById('statusMsg').textContent = '';
+}
+
+function getDateParts() {
+  const val = document.getElementById('reportDate').value; // yyyy-mm-dd
+  if (!val) return null;
+  const [y, m, d] = val.split('-');
+  return { y, m, d, display: `${d}/${m}/${y}`, fileSafe: `${d}-${m}-${y}` };
+}
+
+function buildPDF() {
+  if (products.length === 0) {
+    alert('Adicione ao menos um produto antes de gerar o PDF.');
+    return null;
+  }
+  const dateParts = getDateParts();
+  if (!dateParts) {
+    alert('Selecione a data do relatório.');
+    return null;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const marginX = 10;
+
+  // Header box
+  doc.setDrawColor(0);
+  doc.setLineWidth(0.4);
+  doc.rect(marginX, 10, pageWidth - marginX * 2, 18);
+
+  // Left cell: company
+  doc.line(marginX + 55, 10, marginX + 55, 28);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('INDCON', marginX + 8, 19);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.text('PRÉ-MOLDADOS', marginX + 8, 24);
+
+  // Center: title
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
+  doc.text('ESTOQUE GERAL DE ARMAÇÃO', marginX + 55 + (pageWidth - marginX * 2 - 55 - 55) / 2, 21, { align: 'center' });
+  doc.line(pageWidth - marginX - 55, 10, pageWidth - marginX - 55, 28);
+
+  // Right cell: date
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Data do Relatório:', pageWidth - marginX - 50, 17);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12);
+  doc.text(dateParts.display, pageWidth - marginX - 50, 24);
+
+  // Table
+  const head = [['Produto', 'Classe', 'Cliente', 'Pedido', 'Armado', 'A Armar', 'Estoque', 'OBS']];
+  const body = products.map(p => [
+    p.produto, p.classe || '-', p.cliente, p.pedido || '-', p.armado || '-', p.aarmar || '-', p.estoque || '-', p.obs || ''
+  ]);
+
+  doc.autoTable({
+    head,
+    body,
+    startY: 32,
+    margin: { left: marginX, right: marginX },
+    styles: {
+      font: 'helvetica',
+      fontSize: 9,
+      cellPadding: 2,
+      valign: 'top',
+      lineColor: [0, 0, 0],
+      lineWidth: 0.2,
+      textColor: [20, 20, 20]
+    },
+    headStyles: {
+      fillColor: [20, 49, 94],
+      textColor: [255, 255, 255],
+      fontStyle: 'bold',
+      halign: 'center'
+    },
+    columnStyles: {
+      0: { cellWidth: 70 },
+      1: { cellWidth: 18, halign: 'center' },
+      2: { cellWidth: 45 },
+      3: { cellWidth: 25, halign: 'center' },
+      4: { cellWidth: 25, halign: 'center' },
+      5: { cellWidth: 25, halign: 'center' },
+      6: { cellWidth: 25, halign: 'center' },
+      7: { cellWidth: 'auto' }
+    },
+    didDrawPage: function (data) {
+      const pageH = doc.internal.pageSize.getHeight();
+      const pw = doc.internal.pageSize.getWidth();
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Responsável: José Mivânio de Carvalho', pw - marginX, pageH - 14, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text('Cargo: Coordenador de Equipe', pw - marginX, pageH - 9, { align: 'right' });
+    }
+  });
+
+  const fileName = `estoque-geral-de-armacao-Jose-mivanio-${dateParts.fileSafe}.pdf`;
+  return { doc, fileName };
+}
+
+async function gerarPDF(share) {
+  const statusEl = document.getElementById('statusMsg');
+  statusEl.textContent = '';
+
+  const result = buildPDF();
+  if (!result) return;
+  const { doc, fileName } = result;
+
+  if (!share) {
+    doc.save(fileName);
+    statusEl.textContent = 'PDF gerado e baixado com sucesso.';
+    return;
+  }
+
+  // Share flow
+  try {
+    const blob = doc.output('blob');
+    const file = new File([blob], fileName, { type: 'application/pdf' });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: 'Estoque Geral de Armação',
+        text: 'Relatório de Estoque Geral de Armação'
+      });
+      statusEl.textContent = 'PDF compartilhado com sucesso.';
+    } else {
+      doc.save(fileName);
+      statusEl.textContent = 'Compartilhamento direto não suportado neste navegador. PDF baixado — envie manualmente pelo app desejado.';
+    }
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      statusEl.textContent = 'Compartilhamento cancelado.';
+    } else {
+      doc.save(fileName);
+      statusEl.textContent = 'Não foi possível abrir o menu de compartilhamento. PDF baixado.';
+    }
+  }
+}
+
+// Default date to today
+(function setDefaultDate() {
+  const el = document.getElementById('reportDate');
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, '0');
+  const d = String(today.getDate()).padStart(2, '0');
+  el.value = `${y}-${m}-${d}`;
+})();
+</script>
+
+</body>
+</html>
