@@ -135,15 +135,29 @@ button:disabled{opacity:.6}
 .pf{text-align:right;font-size:11px;color:#555;padding:6px 8px 0}
 #foot2{display:none}#foot2.on{display:flex}
 #btnShareP{flex:1;max-width:520px;font-size:19px;padding:16px;background:#0b57d0;color:#fff}
+
+.wa{background:#25d366;color:#fff;font-size:14px;padding:9px 14px;border-radius:20px}
+.top{gap:8px}.top #saveSt{margin-left:auto}
+.card.gc h3,#gTitle{background:#e65100}
+.none{border:1px solid var(--line);text-align:center;padding:12px;color:#555;background:#fff}
+.gm{padding:12px 14px}.gm small{color:#666;font-size:14px}
+.pb{height:14px;background:#e0e0e0;border-radius:7px;overflow:hidden;margin:8px 0 4px}
+.pb i{display:block;height:100%;background:#2e7d32}
+.gl{font-size:16px;margin-top:4px}
+.ga{display:flex;gap:8px;margin-top:10px}.ga button{flex:1;font-size:15px;padding:10px}
+#gOk{background:#e65100;color:#fff}
+#gCancel{background:#fff;border:1px solid #999;color:#333}
 .ok{color:#2e7d32}
 #bkDown,#bkUp{font-size:16px;padding:14px 8px}
 </style>
 </head>
 <body>
 <div class="app scr" id="scHome">
+  <div class="top"><span></span><button type="button" class="wa" data-wa>💬 Enviar backup</button></div>
   <h2>Monitoramento Rondonópolis</h2>
   <button type="button" class="big" id="goForm">📝 Novo formulário</button>
   <button type="button" class="big alt" id="goPainel">📊 Painel</button>
+  <button type="button" class="big" id="goMetas" style="background:#e65100">🎯 Metas</button>
   <div class="card" style="margin-top:22px"><h3 style="background:#555">Cópia de segurança</h3>
     <div style="padding:12px 14px"><p id="bkInfo" style="margin:0 0 10px;font-size:15px;color:#444"></p>
     <div class="flt" style="margin:0"><button type="button" id="bkDown" style="background:#0b57d0;color:#fff">⬇ Baixar dados</button>
@@ -152,12 +166,13 @@ button:disabled{opacity:.6}
 </div>
 
 <div class="app scr" id="scForm" hidden>
-  <div class="top"><button type="button" class="back" id="backF">‹ Início</button><span id="saveSt"></span></div>
+  <div class="top"><button type="button" class="back" id="backF">‹ Início</button><span id="saveSt"></span><button type="button" class="wa" data-wa>💬 Enviar backup</button></div>
   <h2>Produção do dia</h2>
   <div class="step">1. Data</div>
   <input type="date" class="date" id="fd" aria-label="Data">
   <div class="step">2. Digite quantos tubos foram feitos</div>
   <div id="form"></div>
+  <div id="gBox"></div>
   <div id="extras"></div>
   <button type="button" class="add" id="btnAdd">+ Adicionar outro produto</button>
   <div class="step">3. Eficiência da obra</div>
@@ -165,8 +180,23 @@ button:disabled{opacity:.6}
   <p style="text-align:center"><button type="button" class="lnk" id="btnClear">Limpar este dia</button></p>
 </div>
 
+<div class="app scr" id="scMetas" hidden>
+  <div class="top"><button type="button" class="back" id="backM">‹ Início</button><button type="button" class="wa" data-wa>💬 Enviar backup</button></div>
+  <h2>Metas</h2>
+  <div id="gList"></div>
+  <div class="card"><h3 id="gTitle">Nova meta</h3><div class="af">
+    <label>Nome da meta<input id="gN" type="text" placeholder="Ex.: Tubo de 1,00 FMF"></label>
+    <label>Categoria<select id="gS"></select></label>
+    <div class="two"><label>Meta (quantidade)<input id="gT" type="number" inputmode="numeric" min="1" placeholder="0"></label>
+    <label>Prazo (opcional)<input id="gD" type="date"></label></div>
+    <p class="note">Nome, categoria e quantidade são obrigatórios. O prazo é opcional.</p>
+    <div class="warn" id="gW"></div>
+    <div class="btns"><button type="button" id="gCancel" hidden>Cancelar</button><button type="button" id="gOk">Salvar meta</button></div>
+  </div></div>
+</div>
+
 <div class="app scr" id="scPainel" hidden>
-  <div class="top"><button type="button" class="back" id="backP">‹ Início</button></div>
+  <div class="top"><button type="button" class="back" id="backP">‹ Início</button><button type="button" class="wa" data-wa>💬 Enviar backup</button></div>
   <h2>Painel</h2>
   <div class="flt"><label>De<input type="date" id="pf"></label><label>Até<input type="date" id="pt"></label></div>
   <div class="chips"><button type="button" data-q="hoje">Hoje</button><button type="button" data-q="7">7 dias</button><button type="button" data-q="mes">Este mês</button><button type="button" data-q="tudo">Tudo</button></div>
@@ -192,6 +222,7 @@ button:disabled{opacity:.6}
 const PRODUTOS=[["Tubo de 0,40 FMF",150],["Tubo de 0,60 FMF",120],["Tubo de 0,80 FMF",70],["Tubo de 1,00 FMF",60],["Tubo de 1,20 FMF",55],["Tubo de 1,50 FMF",50]];
 const SEC=[{k:"La",pid:"L",pista:"CONCRETAGEM",t:"Concretagem"},{k:"Lb",pid:"L",pista:"ARMAÇÃO",t:"Armação – Concretagem",arm:1},
  {k:"Ra",pid:"R",pista:"CENTRAL DE BETONEIRAS",t:"Central de Betoneiras"},{k:"Rb",pid:"R",pista:"ARMAÇÃO",t:"Armação – Central",arm:1}];
+const CAT={La:"Concretagem",Lb:"Armação – Concretagem",Ra:"Central de Betoneiras",Rb:"Armação – Central"};
 const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??"").replace(/[&"<>]/g,c=>({"&":"&amp;",'"':"&quot;","<":"&lt;",">":"&gt;"}[c]));
@@ -202,25 +233,43 @@ const iso=t=>`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${Str
 const hoje=()=>iso(new Date());
 const num=v=>(v===""||v==null)?null:Number(v);
 const clone=o=>JSON.parse(JSON.stringify(o));
-let S={date:"",p:{},x:[]},DB={days:{}},dirty=false;
+let S={date:"",p:{},x:[],g:{}},DB={days:{},goals:[]},dirty=false;
+
+/* ---------- metas: acumulado ---------- */
+const gv=(R,id)=>+((R.g||{})[id])||0;
+function cumTo(id,until){let t=0;for(const d in DB.days)if(d<=until)t+=gv(DB.days[d],id);return t}
+function cumUntil(id,date,R){let t=0;for(const d in DB.days)if(d<date)t+=gv(DB.days[d],id);return t+gv(R,id)}
+function situ(o,c){
+  if(c>=o.target)return["✓ Meta atingida","ok"];
+  if(!o.deadline)return["Em andamento",""];
+  const dd=Math.round((new Date(o.deadline+"T00:00")-new Date(hoje()+"T00:00"))/864e5);
+  return dd<0?[`⚠ Prazo vencido há ${-dd} ${-dd===1?"dia":"dias"}`,"warn"]:dd===0?["Prazo termina hoje","warn"]:[`Faltam ${dd} ${dd===1?"dia":"dias"}`,""];
+}
 
 /* ---------- cálculo ---------- */
 const filled=x=>String(x.n).trim()||num(x.m)!=null||num(x.p)!=null;
 function miss(x){const a=[];if(!String(x.n).trim())a.push("nome");if(num(x.m)==null)a.push("meta");if(num(x.p)==null)a.push("produção");return a}
 function rows(s,R=S){
+  const dt=R.date||S.date;
   const b=PRODUTOS.map(([n,m],i)=>({n,m,raw:R.p[s.k+i]??"",p:+R.p[s.k+i]||0,i:1}));
   const e=R.x.filter(x=>x.sec===s.k&&filled(x)).map(x=>({n:String(x.n).trim()||"(sem nome)",m:num(x.m)||0,raw:x.p,p:num(x.p)||0,id:x.id,x}));
-  return b.concat(e);
+  const g=DB.goals.filter(o=>o.sec===s.k).map(o=>({n:o.name,m:o.target,raw:(R.g||{})[o.id]??"",p:gv(R,o.id),g:1,id:o.id,cum:cumUntil(o.id,dt,R)}));
+  return b.concat(e,g);
 }
-const eff=r=>r.m>0?r.p/r.m:null;
+const eff=r=>r.m>0?(r.g?r.cum:r.p)/r.m:null;
 const avg=a=>{const v=a.filter(e=>e!==null);return v.length?v.reduce((x,y)=>x+y,0)/v.length:0};
-function calc(R=S){const T={},O={};SEC.forEach(s=>T[s.k]=avg(rows(s,R).map(eff)));["L","R"].forEach(id=>O[id]=(T[id+"a"]+T[id+"b"])/2);return{T,O}}
+function calc(R=S){const T={},O={};SEC.forEach(s=>T[s.k]=avg(rows(s,R).filter(r=>!r.g).map(eff)));["L","R"].forEach(id=>O[id]=(T[id+"a"]+T[id+"b"])/2);return{T,O}}
 
 /* ---------- formulário ---------- */
 function montarForm(){
   $("#form").innerHTML=SEC.map(s=>`<div class="card ${s.arm?"arm":""}"><h3>${s.t}</h3>`+
    PRODUTOS.map(([n,m],i)=>`<div class="row"><div class="n">${n.replace(" FMF","")}<small>meta: ${m}</small></div>
    <input type="number" inputmode="numeric" min="0" data-f="${s.k}${i}" placeholder="0" aria-label="${s.t} ${n}"><div class="ef" id="f${s.k}${i}">0%</div></div>`).join("")+`</div>`).join("");
+  $("#gS").innerHTML=SEC.map(s=>`<option value="${s.k}">${CAT[s.k]}</option>`).join("");
+}
+function renderGoalsForm(){
+  $("#gBox").innerHTML=DB.goals.length?`<div class="card gc"><h3>🎯 Metas</h3>`+DB.goals.map(o=>`<div class="row"><div class="n">${esc(o.name)}<small id="gs${o.id}"></small></div>
+   <input type="number" inputmode="numeric" min="0" data-g="${o.id}" placeholder="0" value="${esc((S.g||{})[o.id]??"")}" aria-label="Meta ${esc(o.name)}"><div class="ef" id="gf${o.id}">0%</div></div>`).join("")+`</div>`:"";
 }
 function renderExtras(){
   $("#extras").innerHTML=S.x.map((x,n)=>`<div class="card"><h3>Produto adicionado ${n+1}</h3><div class="xrow">
@@ -230,36 +279,39 @@ function renderExtras(){
    <label>Produção<input type="number" inputmode="numeric" min="0" value="${esc(x.p)}" data-x="${x.id}" data-c="p"></label><div class="ef" id="xe${x.id}">-</div></div>
    <div class="warn" id="xw${x.id}"></div></div></div>`).join("");
 }
-function sheetSec(s){
-  const rs=rows(s),e=rs.map(eff);
+/* planilha do dia: só linhas com produção > 0; categoria sem nenhum número não aparece */
+function sheetSec(s,T){
+  const rs=rows(s).filter(r=>r.p>0);if(!rs.length)return"";
+  const e=rs.map(eff);
   return `<table><colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>
   <tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
   rs.map((r,i)=>`<tr>${i?"":`<td class="pista" rowspan="${rs.length}">${s.pista}</td>`}<td class="nm">${esc(r.n)}</td><td>${r.m||""}</td><td class="in">${esc(r.raw)}</td><td>${e[i]===null?"-":pct(e[i])}</td></tr>`).join("")+
-  `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td>${pct(avg(e))}</td></tr></table>`;
+  `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td>${pct(T[s.k])}</td></tr></table>`;
 }
-function renderSheet(O){
-  $("#panels").innerHTML=["L","R"].map(id=>{const [a,b]=SEC.filter(s=>s.pid===id);
-   return `<div class="panel"><div class="ref"><span class="lb">Referência:</span><span class="dt">${fmtData(S.date)}</span></div>${sheetSec(a)}<div class="bar"></div>${sheetSec(b)}<div class="obra"><span>Eficiência da Obra</span><b>${pct(O[id],1)}</b></div></div>`}).join("");
+function renderSheet(T,O){
+  $("#panels").innerHTML=["L","R"].map(id=>{const ps=SEC.filter(s=>s.pid===id).map(s=>sheetSec(s,T)).filter(Boolean);
+   return `<div class="panel"><div class="ref"><span class="lb">Referência:</span><span class="dt">${fmtData(S.date)}</span></div>${ps.length?ps.join('<div class="bar"></div>'):'<div class="none">Sem produção registrada</div>'}<div class="obra"><span>Eficiência da Obra</span><b>${pct(O[id],1)}</b></div></div>`}).join("");
 }
 function update(){
-  const {O}=calc();
+  const {T,O}=calc();
   SEC.forEach(s=>rows(s).forEach((r,i)=>{if(r.i){const e=eff(r);$(`#f${s.k}${i}`).textContent=e===null?"-":pct(e)}}));
   S.x.forEach(x=>{const m=num(x.m)||0,v=num(x.p)||0;$("#xe"+x.id).textContent=m>0?pct(v/m):"-";
     const f=miss(x);$("#xw"+x.id).textContent=filled(x)&&f.length?"⚠ Falta preencher: "+f.join(", "):""});
+  DB.goals.forEach(o=>{const c=cumUntil(o.id,S.date,S),a=$("#gf"+o.id),b=$("#gs"+o.id);
+    if(a)a.textContent=pct(c/o.target);if(b)b.textContent=`${CAT[o.sec]} · acumulado ${c} de ${o.target}`});
   $("#rL").textContent=pct(O.L,1);$("#rR").textContent=pct(O.R,1);
-  renderSheet(O);
-  setSt();
+  renderSheet(T,O);setSt();
   try{localStorage.setItem("mon-draft",JSON.stringify(S))}catch(e){}
 }
 const salvo=()=>!dirty&&!!DB.days[S.date];
 function setSt(){const e=$("#saveSt"),ok=salvo();e.textContent=ok?"✓ Salvo":"● Não salvo";e.style.color=ok?"#2e7d32":"#b26a00";$("#btnShare").classList.toggle("off",!ok)}
 function loadDay(d){
   let dr=null;try{dr=JSON.parse(localStorage.getItem("mon-draft")||"null")}catch(e){}
-  const r=DB.days[d]||(dr&&dr.date===d?dr:null)||{p:{},x:[]};
-  S={date:d,p:clone(r.p||{}),x:clone(r.x||[])};
+  const r=DB.days[d]||(dr&&dr.date===d?dr:null)||{p:{},x:[],g:{}};
+  S={date:d,p:clone(r.p||{}),x:clone(r.x||[]),g:clone(r.g||{})};
   $("#fd").value=d;
   document.querySelectorAll("[data-f]").forEach(i=>i.value=S.p[i.dataset.f]??"");
-  renderExtras();dirty=false;update();
+  renderExtras();renderGoalsForm();dirty=false;update();
 }
 
 /* ---------- telas ---------- */
@@ -271,7 +323,8 @@ document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="fd"){
     if(dirty&&!confirm("Tem alterações não salvas neste dia. Trocar de data mesmo assim?")){t.value=S.date;return}
     loadDay(t.value||hoje());return}
-  if(t.dataset.f)S.p[t.dataset.f]=t.value;
+  if(t.dataset.g)S.g[t.dataset.g]=t.value;
+  else if(t.dataset.f)S.p[t.dataset.f]=t.value;
   else if(t.dataset.x){const x=S.x.find(a=>String(a.id)===t.dataset.x);if(x)x[t.dataset.c]=t.value}
   else return;
   dirty=true;update();});
@@ -279,17 +332,51 @@ document.addEventListener("click",e=>{
   const d=e.target.closest("[data-del]");
   if(d){if(!confirm("Remover este produto?"))return;S.x=S.x.filter(a=>String(a.id)!==d.dataset.del);renderExtras();dirty=true;update();return}
   const o=e.target.closest("[data-open]");if(o){loadDay(o.dataset.open);show("scForm");return}
-  const q=e.target.closest("[data-q]");if(q)quick(q.dataset.q);});
+  const q=e.target.closest("[data-q]");if(q){quick(q.dataset.q);return}
+  const ge=e.target.closest("[data-gedit]");if(ge){editarMeta(ge.dataset.gedit);return}
+  const gd=e.target.closest("[data-gdel]");if(gd){removerMeta(gd.dataset.gdel);return}
+  if(e.target.closest("[data-wa]"))enviarWA();});
 $("#btnClear").onclick=()=>{if(!confirm("Limpar toda a produção digitada e os produtos adicionados deste dia?"))return;
-  S.p={};S.x=[];document.querySelectorAll("[data-f]").forEach(i=>i.value="");renderExtras();dirty=true;update();};
+  S.p={};S.x=[];S.g={};document.querySelectorAll("[data-f]").forEach(i=>i.value="");renderExtras();renderGoalsForm();dirty=true;update();};
 $("#btnAdd").onclick=()=>{const x={id:Date.now(),sec:"La",n:"",m:"",p:""};S.x.push(x);renderExtras();dirty=true;update();
   const el=document.querySelector(`[data-x="${x.id}"][data-c="n"]`);el.scrollIntoView({block:"center"});el.focus();};
 $("#goForm").onclick=()=>{loadDay(hoje());show("scForm");if(DB.days[hoje()])toast("Já existe registro de hoje. Carregado para continuar.",3500)};
 $("#goPainel").onclick=()=>{if(!$("#pf").value&&!$("#pt").value)quick("mes");else renderPainel();show("scPainel")};
+$("#goMetas").onclick=()=>{renderMetas();show("scMetas")};
 $("#backF").onclick=()=>{if(dirty&&!confirm("Tem informações não salvas. Voltar mesmo assim?"))return;dirty=false;goHome()};
-$("#backP").onclick=goHome;
+$("#backP").onclick=goHome;$("#backM").onclick=goHome;
 $("#pf").oninput=$("#pt").oninput=renderPainel;
 window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+
+/* ---------- tela de metas ---------- */
+function metaHtml(o,acts){
+  const c=cumTo(o.id,"9999-12-31"),[st,cl]=situ(o,c);
+  return `<div class="card"><h3>${esc(o.name)}</h3><div class="gm"><small>${CAT[o.sec]}</small>
+   <div class="pb"><i style="width:${Math.min(c/o.target,1)*100}%"></i></div>
+   <div class="gl"><b>${c}</b> de ${o.target} (${pct(c/o.target)})${c<o.target?` · faltam ${o.target-c}`:""}</div>
+   <div class="gl ${cl}"><b>${st}</b>${o.deadline&&c<o.target?` · prazo ${dataBR(o.deadline)}`:""}</div>${acts||""}</div></div>`;
+}
+let gEdit=null;
+function renderMetas(){
+  $("#gList").innerHTML=DB.goals.length?DB.goals.map(o=>metaHtml(o,`<div class="ga"><button type="button" class="back" data-gedit="${o.id}">Editar</button><button type="button" class="xd" data-gdel="${o.id}">Remover</button></div>`)).join(""):'<div class="empty">Nenhuma meta cadastrada ainda.</div>';
+}
+function gReset(){gEdit=null;["gN","gT","gD"].forEach(i=>$("#"+i).value="");$("#gS").value="La";$("#gW").textContent="";$("#gTitle").textContent="Nova meta";$("#gCancel").hidden=true}
+function editarMeta(id){const o=DB.goals.find(a=>String(a.id)===id);if(!o)return;gEdit=o.id;
+  $("#gN").value=o.name;$("#gS").value=o.sec;$("#gT").value=o.target;$("#gD").value=o.deadline||"";$("#gW").textContent="";
+  $("#gTitle").textContent="Editar meta";$("#gCancel").hidden=false;$("#gN").scrollIntoView({block:"center"});$("#gN").focus()}
+async function removerMeta(id){const o=DB.goals.find(a=>String(a.id)===id);if(!o)return;
+  if(!confirm(`Remover a meta "${o.name}"? Os valores já digitados nela deixam de ser somados.`))return;
+  DB.goals=DB.goals.filter(a=>a!==o);try{await persist()}catch(e){toast("Não foi possível salvar.")}
+  if(gEdit===o.id)gReset();renderMetas()}
+$("#gCancel").onclick=gReset;
+$("#gOk").onclick=async()=>{
+  const o={name:$("#gN").value.trim(),sec:$("#gS").value,target:+$("#gT").value,deadline:$("#gD").value||""};
+  const m=[];if(!o.name)m.push("nome");if(!(o.target>0))m.push("quantidade da meta");
+  if(m.length){$("#gW").textContent="⚠ Falta preencher: "+m.join(", ");return}
+  if(gEdit)Object.assign(DB.goals.find(a=>a.id===gEdit),o);else DB.goals.push({id:Date.now(),created:hoje(),...o});
+  try{await persist();toast("✓ Meta salva.")}catch(e){toast("Não foi possível salvar neste aparelho.",4000)}
+  gReset();renderMetas();
+};
 
 /* ---------- painel ---------- */
 function quick(q){
@@ -299,80 +386,124 @@ function quick(q){
   if(q==="hoje"){$("#pf").value=$("#pt").value=hoje()}
   renderPainel();
 }
-function dados(){
-  const f=$("#pf").value,t=$("#pt").value;
+function dados(all){
+  const f=all?"":$("#pf").value,t=all?"":$("#pt").value;
   const ds=Object.keys(DB.days).filter(d=>(!f||d>=f)&&(!t||d<=t)).sort();
   let sL=0,sR=0;const agg={},tS={};SEC.forEach(s=>{agg[s.k]=new Map();tS[s.k]=0});
-  const list=ds.map(d=>{const R=DB.days[d],{T,O}=calc(R);sL+=O.L;sR+=O.R;const tot={};
-    SEC.forEach(s=>{tS[s.k]+=T[s.k];tot[s.k]=0;rows(s,R).forEach(r=>{tot[s.k]+=r.p;const a=agg[s.k].get(r.n)||{p:0,m:0};a.p+=r.p;a.m+=r.m;agg[s.k].set(r.n,a)})});
+  const list=ds.map(d=>{const R={...DB.days[d],date:d},{T,O}=calc(R);sL+=O.L;sR+=O.R;const tot={};
+    SEC.forEach(s=>{tS[s.k]+=T[s.k];tot[s.k]=0;rows(s,R).forEach(r=>{tot[s.k]+=r.p;
+      const key=r.g?"g"+r.id:r.n;let a=agg[s.k].get(key);
+      if(!a){a=r.g?{n:r.n,p:0,m:r.m,g:1,id:r.id}:{n:r.n,p:0,m:0};agg[s.k].set(key,a)}
+      a.p+=r.p;if(!r.g)a.m+=r.m})});
     return{d,T,O,tot}});
-  return{ds,list,agg,tS,sL,sR,n:ds.length};
+  return{ds,list,agg,tS,sL,sR,n:ds.length,last:ds[ds.length-1]};
 }
+const shown=(D,s)=>[...D.agg[s.k].values()].filter(a=>a.p>0);
 function renderPainel(){
-  const {ds,list,agg,sL,sR,n}=dados();
-  if(!n){$("#pOut").innerHTML='<div class="empty">Nenhum registro neste período.</div>';return}
+  const D=dados(),{list,sL,sR,n,last}=D;
+  const gl=DB.goals.length?'<div class="step">Metas (soma acumulada)</div>'+DB.goals.map(o=>metaHtml(o)).join(""):"";
+  if(!n){$("#pOut").innerHTML=gl+'<div class="empty">Nenhum registro neste período.</div>';return}
   let h=`<div class="res"><div><b>${n}</b><span>${n===1?"dia registrado":"dias registrados"}</span></div></div>
-   <div class="res" style="margin-top:8px"><div><b>${pct(sL/n,1)}</b><span>Obra – Concretagem (média)</span></div><div><b>${pct(sR/n,1)}</b><span>Obra – Central (média)</span></div></div>
-   <div class="step">Totais no período</div>`;
-  SEC.forEach(s=>{let tot=0,tm=0;
-    const r=[...agg[s.k]].map(([nm,a])=>{tot+=a.p;tm+=a.m;return `<div class="pr"><span>${esc(nm.replace(" FMF",""))}<br><small>meta ${a.m}</small></span><span style="text-align:right"><b>${a.p}</b><br><small>${a.m>0?pct(a.p/a.m):"-"}</small></span></div>`}).join("");
+   <div class="res" style="margin-top:8px"><div><b>${pct(sL/n,1)}</b><span>Obra – Concretagem (média)</span></div><div><b>${pct(sR/n,1)}</b><span>Obra – Central (média)</span></div></div>`+gl+
+   `<div class="step">Totais no período</div>`;
+  SEC.forEach(s=>{const e=shown(D,s);if(!e.length)return;let tot=0;
+    const r=e.map(a=>{tot+=a.p;const ef=a.g?cumTo(a.id,last)/a.m:(a.m>0?a.p/a.m:null);
+      return `<div class="pr"><span>${a.g?"🎯 ":""}${esc(a.n.replace(" FMF",""))}<br><small>${a.g?"meta total "+a.m:"meta "+a.m}</small></span><span style="text-align:right"><b>${a.p}</b><br><small>${ef===null?"-":pct(ef)}</small></span></div>`}).join("");
     h+=`<div class="card ${s.arm?"arm":""}"><h3>${s.t}</h3>${r}<div class="pr tot"><span>Total produzido</span><span>${tot}</span></div></div>`});
-  h+=`<div class="step">Dias (toque para abrir)</div>`+list.reverse().map(x=>`<button type="button" class="day" data-open="${x.d}"><b>${dataBR(x.d)}</b><span>Concretagem ${pct(x.O.L,1)} · Central ${pct(x.O.R,1)}</span></button>`).join("");
+  h+=`<div class="step">Dias (toque para abrir)</div>`+[...list].reverse().map(x=>`<button type="button" class="day" data-open="${x.d}"><b>${dataBR(x.d)}</b><span>Concretagem ${pct(x.O.L,1)} · Central ${pct(x.O.R,1)}</span></button>`).join("");
   $("#pOut").innerHTML=h;
 }
 
 /* ---------- armazenamento no navegador + backup ---------- */
 const KEY="mon-db-local";
-function carregarDB(){try{DB=JSON.parse(localStorage.getItem(KEY)||"null")||{days:{}}}catch(e){DB={days:{}}}DB.days=DB.days||{}}
+function carregarDB(){try{DB=JSON.parse(localStorage.getItem(KEY)||"null")||{}}catch(e){DB={}}DB.days=DB.days||{};DB.goals=DB.goals||[]}
 async function persist(){localStorage.setItem(KEY,JSON.stringify(DB))}
-function infoBackup(){const l=localStorage.getItem("mon-lastbk"),n=Object.keys(DB.days).length;
-  $("#bkInfo").innerHTML=`${n} ${n===1?"dia salvo":"dias salvos"} neste aparelho.<br>`+(l?`Último backup: ${dataBR(l)}`:"<b class='warn'>⚠ Ainda não baixou nenhum backup.</b>")}
+function infoBackup(){const l=localStorage.getItem("mon-lastbk"),n=Object.keys(DB.days).length,g=DB.goals.length;
+  $("#bkInfo").innerHTML=`${n} ${n===1?"dia salvo":"dias salvos"} · ${g} ${g===1?"meta":"metas"} neste aparelho.<br>`+(l?`Último backup: ${dataBR(l)}`:"<b class='warn'>⚠ Ainda não baixou nenhum backup.</b>")}
 $("#bkDown").onclick=()=>{
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:"application/json"}));
   a.download=`Monitoramento_dados_${hoje()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
   localStorage.setItem("mon-lastbk",hoje());infoBackup();toast("Arquivo baixado. Guarde em um lugar seguro.",3500)};
 $("#bkUp").onclick=()=>$("#bkFile").click();
 $("#bkFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
-  try{const o=JSON.parse(await f.text());if(!o||typeof o.days!=="object")throw 0;const n=Object.keys(o.days).length;
-    if(!confirm(`Este arquivo tem ${n} dia(s). Carregar e juntar com os dados deste aparelho?
-(Dias com a mesma data serão substituídos pelos do arquivo.)`))return;
-    Object.assign(DB.days,o.days);await persist();infoBackup();toast("✓ Dados carregados.")}
+  try{const o=JSON.parse(await f.text());if(!o||typeof o.days!=="object")throw 0;const n=Object.keys(o.days).length,gs=o.goals||[];
+    if(!confirm(`Este arquivo tem ${n} dia(s) e ${gs.length} meta(s). Carregar e juntar com os dados deste aparelho?\n(Itens com a mesma data ou a mesma meta serão substituídos pelos do arquivo.)`))return;
+    Object.assign(DB.days,o.days);gs.forEach(g=>{const i=DB.goals.findIndex(a=>a.id===g.id);if(i<0)DB.goals.push(g);else DB.goals[i]=g});
+    await persist();infoBackup();toast("✓ Dados carregados.")}
   catch(err){toast("Arquivo inválido. Escolha um backup baixado por este aplicativo.",4500)}};
 
 $("#btnSave").onclick=async()=>{
   const b=$("#btnSave");b.disabled=true;b.textContent="Salvando…";
   try{
-    DB.days[S.date]={p:clone(S.p),x:clone(S.x.filter(filled))};
+    DB.days[S.date]={p:clone(S.p),x:clone(S.x.filter(filled)),g:clone(S.g)};
     await persist();dirty=false;setSt();
     toast("✓ Salvo neste aparelho.");
   }catch(e){console.error(e);toast("Não foi possível salvar neste aparelho. Baixe um backup e tente de novo.",4500)}
   b.disabled=false;b.textContent="Salvar";
 };
 
-/* ---------- PDF ---------- */
+/* ---------- WhatsApp: envia o arquivo de backup ---------- */
+async function enviarWA(){
+  if(dirty&&!$("#scForm").hidden&&!confirm("Tem informações não salvas. Elas não vão no backup. Enviar assim mesmo?"))return;
+  if(!Object.keys(DB.days).length&&!DB.goals.length){toast("Ainda não há dados salvos para enviar.",3500);return}
+  const nome=`Monitoramento_dados_${hoje()}.json`,json=JSON.stringify(DB);
+  let file=new File([json],nome,{type:"application/json"});
+  if(!(navigator.canShare&&navigator.canShare({files:[file]}))){
+    const f2=new File([json],nome,{type:"text/plain"});if(navigator.canShare&&navigator.canShare({files:[f2]}))file=f2;else file=null}
+  if(file){
+    try{await navigator.share({files:[file],title:"Backup Monitoramento Rondonópolis",text:"Backup dos dados do Monitoramento Rondonópolis"});
+      localStorage.setItem("mon-lastbk",hoje());infoBackup();toast("✓ Backup enviado.")}
+    catch(err){if(err.name!=="AbortError"){console.error(err);toast("Não foi possível enviar o backup.",4000)}}
+    return}
+  /* sem compartilhamento de arquivo (ex.: computador): baixa o arquivo e abre o WhatsApp para anexar */
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([json],{type:"application/json"}));a.download=nome;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  localStorage.setItem("mon-lastbk",hoje());infoBackup();
+  window.open("https://wa.me/?text="+encodeURIComponent("Backup dos dados do Monitoramento Rondonópolis ("+dataBR(hoje())+"). Segue o arquivo em anexo."),"_blank");
+  toast("Arquivo baixado. Anexe-o na conversa do WhatsApp.",5000);
+}
+
+/* ---------- relatório geral em PDF ---------- */
 function relatorio(){
-  const D=dados(),{list,agg,tS,sL,sR,n}=D;
+  const D=dados(),{list,tS,sL,sR,n,last}=D;
   const logo=$("#sheet .head img").src,g=new Date();
-  const per=`${dataBR($("#pf").value||D.ds[0])} a ${dataBR($("#pt").value||D.ds[n-1])}`;
+  const per=`${dataBR($("#pf").value||D.ds[0])} a ${dataBR($("#pt").value||last)}`;
   const ger=`${dataBR(iso(g))} ${String(g.getHours()).padStart(2,"0")}:${String(g.getMinutes()).padStart(2,"0")}`;
   const cab=sub=>`<div class="head"><img alt="" src="${logo}"><h1>MONITORAMENTO UNIDADE RONDONÓPOLIS</h1></div><div class="sub">${sub}</div>`;
   const colg='<colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>';
-  const sec=s=>{const e=[...agg[s.k]];return `<table>${colg}<tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
-    e.map(([nm,a],i)=>`<tr>${i?"":`<td class="pista" rowspan="${e.length}">${s.pista}</td>`}<td class="nm">${esc(nm)}</td><td>${a.m||""}</td><td class="in">${a.p}</td><td>${a.m>0?pct(a.p/a.m):"-"}</td></tr>`).join("")+
+  const sec=s=>{const e=shown(D,s);if(!e.length)return"";
+    return `<table>${colg}<tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
+    e.map((a,i)=>{const ef=a.g?cumTo(a.id,last)/a.m:(a.m>0?a.p/a.m:null);
+      return `<tr>${i?"":`<td class="pista" rowspan="${e.length}">${s.pista}</td>`}<td class="nm">${esc(a.n)}</td><td>${a.m||""}</td><td class="in">${a.p}</td><td>${ef===null?"-":pct(ef)}</td></tr>`}).join("")+
     `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência média da Equipe</td><td>${pct(tS[s.k]/n)}</td></tr></table>`};
-  const painel=(id,O)=>{const [a,b]=SEC.filter(s=>s.pid===id);
-    return `<div class="panel"><div class="ref"><span class="lb">Período:</span><span class="dt">${per}</span></div>${sec(a)}<div class="bar"></div>${sec(b)}<div class="obra"><span>Eficiência média da Obra</span><b>${pct(O/n,1)}</b></div></div>`};
+  const painel=(id,O)=>{const ps=SEC.filter(s=>s.pid===id).map(sec).filter(Boolean);
+    return `<div class="panel"><div class="ref"><span class="lb">Período:</span><span class="dt">${per}</span></div>${ps.length?ps.join('<div class="bar"></div>'):'<div class="none">Sem produção registrada</div>'}<div class="obra"><span>Eficiência média da Obra</span><b>${pct(O/n,1)}</b></div></div>`};
   const kp=`<div class="kp"><div><i>Dias registrados</i><b>${n}</b></div><div><i>Obra – Concretagem (média)</i><b>${pct(sL/n,1)}</b></div><div><i>Obra – Central de Betoneiras (média)</i><b>${pct(sR/n,1)}</b></div></div>`;
-  const cel=(t,e)=>`${t} · ${pct(e)}`;
-  const lin=list.map(x=>`<tr><td>${dataBR(x.d)}</td><td>${cel(x.tot.La,x.T.La)}</td><td>${cel(x.tot.Lb,x.T.Lb)}</td><td class="ob">${pct(x.O.L,1)}</td><td>${cel(x.tot.Ra,x.T.Ra)}</td><td>${cel(x.tot.Rb,x.T.Rb)}</td><td class="ob">${pct(x.O.R,1)}</td></tr>`);
-  const sm=k=>list.reduce((a,x)=>a+x.tot[k],0);
-  lin.push(`<tr class="tt"><td>Período</td><td>${cel(sm("La"),tS.La/n)}</td><td>${cel(sm("Lb"),tS.Lb/n)}</td><td class="ob">${pct(sL/n,1)}</td><td>${cel(sm("Ra"),tS.Ra/n)}</td><td>${cel(sm("Rb"),tS.Rb/n)}</td><td class="ob">${pct(sR/n,1)}</td></tr>`);
-  const th=`<thead><tr><td>Data</td><td>Concretagem<br><small>produzido · efic.</small></td><td>Armação<br><small>produzido · efic.</small></td><td>Obra<br><small>Concretagem</small></td><td>Central de Betoneiras<br><small>produzido · efic.</small></td><td>Armação<br><small>produzido · efic.</small></td><td>Obra<br><small>Central</small></td></tr></thead>`;
-  const cg='<colgroup><col style="width:12%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:15%"><col style="width:15%"><col style="width:14%"></colgroup>';
-  const ch=[];for(let i=0;i<lin.length;i+=22)ch.push(lin.slice(i,i+22));
+  /* tabela por dia: só colunas de categorias que tiveram produção */
+  const cel=(t,e)=>t>0?`${t} · ${pct(e)}`:"–",sm=k=>list.reduce((a,x)=>a+x.tot[k],0);
+  const H={La:"Concretagem",Lb:"Armação",Ra:"Central de Betoneiras",Rb:"Armação"},cols=[];
+  ["L","R"].forEach(id=>{const ss=SEC.filter(s=>s.pid===id&&shown(D,s).length);if(!ss.length)return;
+    ss.forEach(s=>cols.push({h:H[s.k],sub:"produzido · efic.",f:x=>cel(x.tot[s.k],x.T[s.k]),ft:()=>cel(sm(s.k),tS[s.k]/n)}));
+    cols.push({h:"Obra",sub:id==="L"?"Concretagem":"Central",ob:1,f:x=>pct(x.O[id],1),ft:()=>pct((id==="L"?sL:sR)/n,1)})});
+  const ch=[];
+  if(cols.length){
+    const lin=list.map(x=>`<tr><td>${dataBR(x.d)}</td>${cols.map(c=>`<td${c.ob?' class="ob"':""}>${c.f(x)}</td>`).join("")}</tr>`);
+    lin.push(`<tr class="tt"><td>Período</td>${cols.map(c=>`<td${c.ob?' class="ob"':""}>${c.ft()}</td>`).join("")}</tr>`);
+    const w=(88/cols.length).toFixed(2)+"%",cg=`<colgroup><col style="width:12%">${cols.map(()=>`<col style="width:${w}">`).join("")}</colgroup>`;
+    const th=`<thead><tr><td>Data</td>${cols.map(c=>`<td>${c.h}<br><small>${c.sub}</small></td>`).join("")}</tr></thead>`;
+    for(let i=0;i<lin.length;i+=22)ch.push(["POR DIA",cg,th,lin.slice(i,i+22)]);
+  }
+  /* metas */
+  if(DB.goals.length){
+    const lm=DB.goals.map(o=>{const c=cumTo(o.id,"9999-12-31"),[st,cl]=situ(o,c);
+      return `<tr><td style="text-align:left;padding-left:8px">${esc(o.name)}</td><td>${CAT[o.sec]}</td><td>${o.target}</td><td>${c}</td><td>${Math.max(o.target-c,0)}</td><td class="ob">${pct(c/o.target)}</td><td>${o.deadline?dataBR(o.deadline):"–"}</td><td>${st}</td></tr>`});
+    const cg='<colgroup><col style="width:20%"><col style="width:16%"><col style="width:9%"><col style="width:10%"><col style="width:9%"><col style="width:9%"><col style="width:10%"><col style="width:17%"></colgroup>';
+    const th='<thead><tr><td>Meta</td><td>Categoria</td><td>Meta<br><small>quantidade</small></td><td>Realizado<br><small>acumulado</small></td><td>Falta</td><td>%</td><td>Prazo</td><td>Situação</td></tr></thead>';
+    for(let i=0;i<lm.length;i+=22)ch.push(["METAS",cg,th,lm.slice(i,i+22)]);
+  }
   const tp=1+ch.length,pf=i=>`<div class="pf">Gerado em ${ger} · Página ${i} de ${tp}</div>`;
   let out=`<div class="pg">${cab("RELATÓRIO GERAL DE PRODUÇÃO — "+per)}${kp}<div class="panels">${painel("L",sL)}${painel("R",sR)}</div>${pf(1)}</div>`;
-  ch.forEach((c,i)=>out+=`<div class="pg">${cab("DETALHAMENTO POR DIA — "+per)}<table class="rt">${cg}${th}<tbody>${c.join("")}</tbody></table>${pf(i+2)}</div>`);
+  ch.forEach((c,i)=>out+=`<div class="pg">${cab(c[0]==="METAS"?"METAS — ACUMULADO ATÉ "+dataBR(hoje()):"DETALHAMENTO POR DIA — "+per)}<table class="rt">${c[1]}${c[2]}<tbody>${c[3].join("")}</tbody></table>${pf(i+2)}</div>`);
   return out;
 }
 async function pdfDe(els){
