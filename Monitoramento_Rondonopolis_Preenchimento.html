@@ -70,6 +70,31 @@ button:disabled{opacity:.6}
 #hid{position:absolute;top:0;left:0;width:0;height:0;overflow:hidden}
 .foot{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;justify-content:center;padding:10px;background:#fffe;border-top:1px solid #ccc;backdrop-filter:blur(4px)}
 #btnShare{flex:1;max-width:520px;font-size:19px;padding:16px}
+
+[hidden]{display:none!important}
+.add{width:100%;font-size:18px;padding:15px;background:#fff;color:#6a1b9a;border:2px dashed #6a1b9a;border-radius:12px;margin:2px 0 6px}
+#addBox h3{background:#6a1b9a}
+.af{padding:12px 14px;display:grid;gap:10px}
+.af label{display:block;font-size:14px;font-weight:700;color:#444}
+.af input,.af select{display:block;width:100%;height:48px;margin-top:4px;font:600 18px Calibri,Carlito,Arial,sans-serif;border:2px solid #bbb;border-radius:10px;padding:0 10px;background:#fff}
+.af .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.af .note{margin:0;font-size:13px;color:#666}
+.af .btns{display:flex;gap:8px}
+.af .btns button{flex:1}
+#aCancel{background:#fff;border:1px solid #999;color:#333}
+#aOk{background:#6a1b9a;color:#fff}
+.xrow{padding:10px 14px;border-top:1px solid #eee;background:#faf5ff}
+.xt{display:flex;gap:8px}
+.xt .xn{flex:1;height:46px;font:700 17px Calibri,Carlito,Arial,sans-serif;border:2px solid #bbb;border-radius:10px;padding:0 10px;min-width:0}
+.xd{background:#fff;border:1px solid #c62828;color:#c62828;padding:0 14px;font-size:18px}
+.xv{display:flex;gap:8px;align-items:flex-end;margin-top:8px}
+.xv label{flex:1;font-size:13px;font-weight:700;color:#555}
+.xv input{display:block;width:100%;height:50px;margin-top:3px;font-size:22px;font-weight:700;text-align:center;border:2px solid #bbb;border-radius:10px;background:#fffbd0}
+.xv .ef{width:52px;text-align:right;font-size:15px;font-weight:700;color:#555;padding-bottom:14px}
+.xs{display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:8px}
+.xs select{display:block;width:100%;height:46px;margin-top:3px;font:700 17px Calibri,Carlito,Arial,sans-serif;border:2px solid #6a1b9a;border-radius:10px;background:#fff;padding:0 8px}
+#extras .card h3{background:#6a1b9a}
+.warn{color:#b26a00;font-size:14px;font-weight:700;margin-top:6px}
 </style>
 </head>
 <body>
@@ -79,6 +104,8 @@ button:disabled{opacity:.6}
   <input type="date" class="date" id="fd" aria-label="Data">
   <div class="step">2. Digite quantos tubos foram feitos</div>
   <div id="form"></div>
+  <div id="extras"></div>
+  <button type="button" class="add" id="btnAdd">+ Adicionar outro produto</button>
   <div class="step">3. Eficiência da obra</div>
   <div class="res"><div><b id="rL">0%</b><span>Concretagem</span></div><div><b id="rR">0%</b><span>Central de Betoneiras</span></div></div>
 </div>
@@ -99,85 +126,95 @@ button:disabled{opacity:.6}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const PRODUTOS=[["Tubo de 0,40 FMF",150],["Tubo de 0,60 FMF",120],["Tubo de 0,80 FMF",70],["Tubo de 1,00 FMF",60],["Tubo de 1,20 FMF",55],["Tubo de 1,50 FMF",50]];
-const PAINEIS=[{id:"L",top:"CONCRETAGEM"},{id:"R",top:"CENTRAL DE BETONEIRAS"}];
-const SECOES=[["a",p=>p.top],["b",()=>"ARMAÇÃO"]];
+const SEC=[{k:"La",pid:"L",pista:"CONCRETAGEM",t:"Concretagem"},{k:"Lb",pid:"L",pista:"ARMAÇÃO",t:"Armação – Concretagem",arm:1},
+ {k:"Ra",pid:"R",pista:"CENTRAL DE BETONEIRAS",t:"Central de Betoneiras"},{k:"Rb",pid:"R",pista:"ARMAÇÃO",t:"Armação – Central",arm:1}];
 const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const $=(s,r=document)=>r.querySelector(s);
-
-function secao(p,s,nome){
-  let h=`<table><colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>
-  <tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`;
-  PRODUTOS.forEach(([n,m],i)=>{
-    const k=`${p.id}${s}${i}`;
-    h+=`<tr>${i?"":`<td class="pista" rowspan="6">${nome}</td>`}<td class="nm">${n}</td>
-    <td><input type="number" inputmode="numeric" min="0" data-k="m${k}" value="${m}" aria-label="Meta ${n}"></td>
-    <td class="in"><input type="number" inputmode="numeric" min="0" data-k="p${k}" aria-label="Produção ${n}"></td>
-    <td id="e${k}">0%</td></tr>`;
-  });
-  return h+`<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td id="t${p.id}${s}">0%</td></tr></table>`;
-}
-$("#panels").innerHTML=PAINEIS.map(p=>`<div class="panel">
-  <div class="ref"><span class="lb">Referência:</span><span class="dt"><input type="date" data-k="d${p.id}" aria-label="Data de referência"></span></div>
-  ${secao(p,"a",p.top)}<div class="bar"></div>${secao(p,"b","ARMAÇÃO")}
-  <div class="obra"><span>Eficiência da Obra</span><b id="o${p.id}">0.0%</b></div></div>`).join("");
-
+const esc=s=>String(s??"").replace(/[&"<>]/g,c=>({"&":"&amp;",'"':"&quot;","<":"&lt;",">":"&gt;"}[c]));
 const pct=(v,d=0)=>(v*100).toFixed(d).replace(".",",")+"%";
 const fmtData=v=>{if(!v)return"";const[a,m,d]=v.split("-");return `${d}-${MES[+m-1]}`};
 const hoje=()=>{const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`};
+const num=v=>(v===""||v==null)?null:Number(v);
+let S={date:"",p:{},x:[]};
 
+const filled=x=>String(x.n).trim()||num(x.m)!=null||num(x.p)!=null;
+function miss(x){const a=[];if(!String(x.n).trim())a.push("nome");if(num(x.m)==null)a.push("meta");if(num(x.p)==null)a.push("produção");return a}
+function rows(s){
+  const b=PRODUTOS.map(([n,m],i)=>({n,m,raw:S.p[s.k+i]??"",p:+S.p[s.k+i]||0}));
+  const e=S.x.filter(x=>x.sec===s.k&&filled(x)).map(x=>({n:String(x.n).trim()||"(sem nome)",m:num(x.m)||0,raw:x.p,p:num(x.p)||0,id:x.id,x}));
+  return b.map(r=>({...r,i:1})).concat(e);
+}
+const eff=r=>r.m>0?r.p/r.m:null;
 function calc(){
-  PAINEIS.forEach(p=>{
-    const teams=SECOES.map(([s])=>{
-      const effs=PRODUTOS.map((_,i)=>{
-        const k=`${p.id}${s}${i}`,m=+$(`[data-k=m${k}]`).value||0,v=+$(`[data-k=p${k}]`).value||0,e=m?v/m:0;
-        $("#e"+k).textContent=pct(e);return e;});
-      const t=effs.reduce((a,b)=>a+b,0)/effs.length;
-      $(`#t${p.id}${s}`).textContent=pct(t);return t;});
-    $("#o"+p.id).textContent=pct((teams[0]+teams[1])/2,1);
-  });
+  const T={},O={};
+  SEC.forEach(s=>{const v=rows(s).map(eff).filter(e=>e!==null);T[s.k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:0});
+  ["L","R"].forEach(id=>O[id]=(T[id+"a"]+T[id+"b"])/2);
+  return{T,O};
 }
 
 function montarForm(){
-  let f="";
-  PAINEIS.forEach(p=>{
-    SECOES.forEach(([s,nome],si)=>{
-      const tit=si?"Armação – "+(p.id==="L"?"Concretagem":"Central"):nome(p);
-      f+=`<div class="card ${si?"arm":""}"><h3>${tit}</h3>`;
-      PRODUTOS.forEach(([n,m],i)=>{const k=`${p.id}${s}${i}`;
-        f+=`<div class="row"><div class="n">${n.replace(" FMF","")}<small>meta: ${m}</small></div>
-        <input type="number" inputmode="numeric" min="0" data-f="p${k}" placeholder="0" aria-label="${tit} ${n}"><div class="ef" id="f${k}">0%</div></div>`;});
-      f+=`</div>`;});
-  });
-  $("#form").innerHTML=f;
+  $("#form").innerHTML=SEC.map(s=>`<div class="card ${s.arm?"arm":""}"><h3>${s.t}</h3>`+
+   PRODUTOS.map(([n,m],i)=>`<div class="row"><div class="n">${n.replace(" FMF","")}<small>meta: ${m}</small></div>
+   <input type="number" inputmode="numeric" min="0" data-f="${s.k}${i}" placeholder="0" aria-label="${s.t} ${n}"><div class="ef" id="f${s.k}${i}">0%</div></div>`).join("")+
+   `<div id="xx-${s.k}"></div></div>`).join("");
 }
-function sync(){
-  document.querySelectorAll("[data-f]").forEach(i=>{$(`#sheet [data-k=${i.dataset.f}]`).value=i.value});
-  $("#fd").value=$("#fd").value||hoje();
-  document.querySelectorAll("#sheet [data-k^=d]").forEach(i=>i.value=$("#fd").value);
-  calc();
-  PAINEIS.forEach(p=>{SECOES.forEach(([s])=>PRODUTOS.forEach((_,i)=>{const k=`${p.id}${s}${i}`;$("#f"+k).textContent=$("#e"+k).textContent;}));
-    $("#r"+p.id).textContent=$("#o"+p.id).textContent;});
-  salvar();
+function renderExtras(){
+  $("#extras").innerHTML=S.x.map((x,n)=>`<div class="card"><h3>Produto adicionado ${n+1}</h3><div class="xrow">
+   <label class="xs">Onde entra na planilha?<select data-x="${x.id}" data-c="sec">${SEC.map(s=>`<option value="${s.k}"${s.k===x.sec?" selected":""}>${s.t}</option>`).join("")}</select></label>
+   <div class="xt"><input class="xn" type="text" placeholder="Nome do produto" value="${esc(x.n)}" data-x="${x.id}" data-c="n"><button type="button" class="xd" data-del="${x.id}" aria-label="Remover produto">✕</button></div>
+   <div class="xv"><label>Meta<input type="number" inputmode="numeric" min="0" value="${esc(x.m)}" data-x="${x.id}" data-c="m"></label>
+   <label>Produção<input type="number" inputmode="numeric" min="0" value="${esc(x.p)}" data-x="${x.id}" data-c="p"></label><div class="ef" id="xe${x.id}">-</div></div>
+   <div class="warn" id="xw${x.id}"></div></div></div>`).join("");
 }
-function salvar(){try{const o={};document.querySelectorAll("[data-f]").forEach(i=>o[i.dataset.f]=i.value);o.date=$("#fd").value;localStorage.setItem("mon-rdo",JSON.stringify(o))}catch(e){}}
-function carregar(){let o={};try{o=JSON.parse(localStorage.getItem("mon-rdo")||"{}")}catch(e){}
-  document.querySelectorAll("[data-f]").forEach(i=>{if(o[i.dataset.f]!==undefined)i.value=o[i.dataset.f]});
-  $("#fd").value=o.date||hoje();}
-document.addEventListener("input",e=>{if(e.target.dataset.f||e.target.id==="fd")sync();});
-$("#btnClear").onclick=()=>{if(!confirm("Limpar toda a produção digitada?"))return;
-  document.querySelectorAll("[data-f]").forEach(i=>i.value="");sync();};
+function sheetSec(s){
+  const rs=rows(s),e=rs.map(eff),v=e.filter(a=>a!==null),t=v.length?v.reduce((a,b)=>a+b,0)/v.length:0;
+  return `<table><colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>
+  <tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
+  rs.map((r,i)=>`<tr>${i?"":`<td class="pista" rowspan="${rs.length}">${s.pista}</td>`}<td class="nm">${esc(r.n)}</td><td>${r.m||""}</td><td class="in">${esc(r.raw)}</td><td>${e[i]===null?"-":pct(e[i])}</td></tr>`).join("")+
+  `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td>${pct(t)}</td></tr></table>`;
+}
+function renderSheet(O){
+  $("#panels").innerHTML=["L","R"].map(id=>{const [a,b]=SEC.filter(s=>s.pid===id);
+   return `<div class="panel"><div class="ref"><span class="lb">Referência:</span><span class="dt">${fmtData(S.date)}</span></div>${sheetSec(a)}<div class="bar"></div>${sheetSec(b)}<div class="obra"><span>Eficiência da Obra</span><b>${pct(O[id],1)}</b></div></div>`}).join("");
+}
+function update(){
+  const {T,O}=calc();
+  SEC.forEach(s=>rows(s).forEach((r,i)=>{const e=eff(r);
+    if(r.i)$(`#f${s.k}${i}`).textContent=e===null?"-":pct(e);}));
+  S.x.forEach(x=>{const m=num(x.m)||0,v=num(x.p)||0;$("#xe"+x.id).textContent=m>0?pct(v/m):"-";
+    const f=miss(x);$("#xw"+x.id).textContent=filled(x)&&f.length?"⚠ Falta preencher: "+f.join(", "):""});
+  $("#rL").textContent=pct(O.L,1);$("#rR").textContent=pct(O.R,1);
+  renderSheet(O);
+  try{localStorage.setItem("mon-rdo2",JSON.stringify(S))}catch(e){}
+}
+function carregar(){
+  try{const o=JSON.parse(localStorage.getItem("mon-rdo2")||"null");if(o)S={date:o.date||"",p:o.p||{},x:o.x||[]}}catch(e){}
+  S.date=S.date||hoje();$("#fd").value=S.date;
+  document.querySelectorAll("[data-f]").forEach(i=>i.value=S.p[i.dataset.f]??"");
+  renderExtras();
+}
+document.addEventListener("input",e=>{const t=e.target;
+  if(t.dataset.f)S.p[t.dataset.f]=t.value;
+  else if(t.dataset.x){const x=S.x.find(a=>String(a.id)===t.dataset.x);if(x)x[t.dataset.c]=t.value}
+  else if(t.id==="fd")S.date=t.value||hoje();
+  else return;
+  update();});
+document.addEventListener("click",e=>{const d=e.target.closest("[data-del]");if(!d)return;
+  if(!confirm("Remover este produto?"))return;
+  S.x=S.x.filter(a=>String(a.id)!==d.dataset.del);renderExtras();update();});
+$("#btnClear").onclick=()=>{if(!confirm("Limpar toda a produção digitada e os produtos adicionados?"))return;
+  S.p={};S.x=[];document.querySelectorAll("[data-f]").forEach(i=>i.value="");renderExtras();update();};
+
+$("#btnAdd").onclick=()=>{
+  const x={id:Date.now(),sec:"La",n:"",m:"",p:""};S.x.push(x);renderExtras();update();
+  const el=document.querySelector(`[data-x="${x.id}"][data-c="n"]`);el.scrollIntoView({block:"center"});el.focus();};
 
 function toast(t,ms=2800){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),ms)}
 
 async function gerarPDF(){
   const canvas=await html2canvas($("#sheet"),{scale:2,backgroundColor:"#ffffff",windowWidth:1200,onclone:doc=>{
-    doc.getElementById("hid").style.cssText="position:static;width:auto;height:auto;overflow:visible";doc.getElementById("sheet").classList.add("pdf");
-    doc.querySelectorAll("input").forEach(i=>{
-      const s=doc.createElement("span");s.className="v";
-      s.textContent=i.type==="date"?fmtData(i.value):i.value;
-      if(i.closest(".ref"))s.className="dt";
-      i.replaceWith(s);});
-  }});
+    doc.getElementById("hid").style.cssText="position:static;width:auto;height:auto;overflow:visible";
+    doc.getElementById("sheet").classList.add("pdf");}});
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
   const w=pdf.internal.pageSize.getWidth()-12,h=canvas.height*w/canvas.width;
@@ -185,10 +222,12 @@ async function gerarPDF(){
   return pdf.output("blob");
 }
 $("#btnShare").onclick=async()=>{
+  const f=S.x.filter(filled).map(x=>({x,m:miss(x)})).filter(a=>a.m.length);
+  if(f.length&&!confirm("Atenção, tem produto adicionado com informação faltando:\n\n"+f.map(a=>"• "+(String(a.x.n).trim()||"(sem nome)")+": falta "+a.m.join(", ")).join("\n")+"\n\nGerar o PDF mesmo assim?"))return;
   const b=$("#btnShare");b.disabled=true;b.textContent="Gerando PDF…";
   try{
     const blob=await gerarPDF();
-    const nome=`Monitoramento_Rondonopolis_${$("#fd").value||hoje()}.pdf`;
+    const nome=`Monitoramento_Rondonopolis_${S.date||hoje()}.pdf`;
     const file=new File([blob],nome,{type:"application/pdf"});
     if(navigator.canShare&&navigator.canShare({files:[file]})){
       try{await navigator.share({files:[file],title:"Monitoramento Unidade Rondonópolis"});}
@@ -201,7 +240,7 @@ $("#btnShare").onclick=async()=>{
   }catch(err){console.error(err);toast("Não foi possível gerar o PDF. Verifique a conexão e tente de novo.",4000);}
   b.disabled=false;b.textContent="Compartilhar PDF";
 };
-montarForm();carregar();sync();
+montarForm();carregar();update();
 </script>
 </body>
 </html>
