@@ -73,7 +73,6 @@ button:disabled{opacity:.6}
 
 [hidden]{display:none!important}
 .add{width:100%;font-size:18px;padding:15px;background:#fff;color:#6a1b9a;border:2px dashed #6a1b9a;border-radius:12px;margin:2px 0 6px}
-#addBox h3{background:#6a1b9a}
 .af{padding:12px 14px;display:grid;gap:10px}
 .af label{display:block;font-size:14px;font-weight:700;color:#444}
 .af input,.af select{display:block;width:100%;height:48px;margin-top:4px;font:600 18px Calibri,Carlito,Arial,sans-serif;border:2px solid #bbb;border-radius:10px;padding:0 10px;background:#fff}
@@ -95,10 +94,65 @@ button:disabled{opacity:.6}
 .xs select{display:block;width:100%;height:46px;margin-top:3px;font:700 17px Calibri,Carlito,Arial,sans-serif;border:2px solid #6a1b9a;border-radius:10px;background:#fff;padding:0 8px}
 #extras .card h3{background:#6a1b9a}
 .warn{color:#b26a00;font-size:14px;font-weight:700;margin-top:6px}
+
+.big{display:block;width:100%;font-size:22px;padding:26px 16px;background:#0b57d0;color:#fff;border-radius:16px;margin:14px 0;box-shadow:0 2px 6px #0003}
+.big.alt{background:#2e7d32}
+.big.g{background:#fff;color:#222;border:2px solid #bbb;font-size:19px;padding:18px}
+.lnk{background:none;color:#0b57d0;padding:8px 6px;font-size:15px;text-decoration:underline}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;min-height:40px}
+.top span{font-size:15px;color:#444;font-weight:600}
+.sub2{color:#555;font-size:15px;margin:-4px 0 14px}
+.flt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.flt label{font-size:13px;font-weight:700;color:#555}
+.flt input{display:block;width:100%;height:46px;margin-top:3px;font-size:17px;border:2px solid #bbb;border-radius:10px;padding:0 8px;background:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{padding:9px 13px;font-size:14px;background:#fff;border:1px solid #999;border-radius:20px;color:#222}
+.pr{display:flex;justify-content:space-between;gap:8px;padding:9px 14px;border-top:1px solid #eee;font-size:16px}
+.pr small{color:#666;font-size:13px}
+.pr.tot{font-weight:700;background:#f4f6f8}
+.day{display:block;width:100%;text-align:left;background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px #0002;color:#111;font-weight:400}
+.day b{display:block;font-size:17px}.day span{font-size:14px;color:#555}
+.empty{text-align:center;color:#666;padding:24px 8px}
+#foot{display:none}#foot.on{display:flex}
+#btnSave{background:#2e7d32;color:#fff;flex:1;font-size:18px;padding:16px}
+#btnShare{flex:1.3}
+.back{background:#fff;color:#0b57d0;border:2px solid #0b57d0;font-size:16px;padding:10px 18px}
+#btnShare.off{opacity:.45}
+
+.pg{width:1100px;background:#fff;padding-bottom:4px}
+.pg .panels{grid-template-columns:1fr 1fr;margin-top:8px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.kp div{border:1px solid var(--line)}
+.kp i{display:block;font-style:normal;background:var(--bar);color:#fff;font-size:12px;padding:2px;text-align:center}
+.kp b{display:block;font-size:26px;padding:5px;text-align:center;background:#fff;font-weight:700}
+.rt{margin-top:8px}
+.rt thead td{background:var(--bar);color:#fff;font-weight:700;height:38px;line-height:1.15}
+.rt thead small{font-weight:400;font-size:11px}
+.rt tbody tr:nth-child(even) td{background:#f3f3f3}
+.rt tbody tr td.ob{background:var(--yel);font-weight:700}
+.rt tbody tr.tt td{background:#d9d9d9;font-weight:700}
+.rt tbody tr.tt td.ob{background:var(--yel)}
+.pf{text-align:right;font-size:11px;color:#555;padding:6px 8px 0}
+#foot2{display:none}#foot2.on{display:flex}
+#btnShareP{flex:1;max-width:520px;font-size:19px;padding:16px;background:#0b57d0;color:#fff}
+.ok{color:#2e7d32}
+#bkDown,#bkUp{font-size:16px;padding:14px 8px}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app scr" id="scHome">
+  <h2>Monitoramento Rondonópolis</h2>
+  <button type="button" class="big" id="goForm">📝 Novo formulário</button>
+  <button type="button" class="big alt" id="goPainel">📊 Painel</button>
+  <div class="card" style="margin-top:22px"><h3 style="background:#555">Cópia de segurança</h3>
+    <div style="padding:12px 14px"><p id="bkInfo" style="margin:0 0 10px;font-size:15px;color:#444"></p>
+    <div class="flt" style="margin:0"><button type="button" id="bkDown" style="background:#0b57d0;color:#fff">⬇ Baixar dados</button>
+    <button type="button" id="bkUp" style="background:#fff;border:2px solid #0b57d0;color:#0b57d0">⬆ Carregar dados</button></div>
+    <input type="file" id="bkFile" accept=".json,application/json" hidden></div></div>
+</div>
+
+<div class="app scr" id="scForm" hidden>
+  <div class="top"><button type="button" class="back" id="backF">‹ Início</button><span id="saveSt"></span></div>
   <h2>Produção do dia</h2>
   <div class="step">1. Data</div>
   <input type="date" class="date" id="fd" aria-label="Data">
@@ -108,18 +162,28 @@ button:disabled{opacity:.6}
   <button type="button" class="add" id="btnAdd">+ Adicionar outro produto</button>
   <div class="step">3. Eficiência da obra</div>
   <div class="res"><div><b id="rL">0%</b><span>Concretagem</span></div><div><b id="rR">0%</b><span>Central de Betoneiras</span></div></div>
+  <p style="text-align:center"><button type="button" class="lnk" id="btnClear">Limpar este dia</button></p>
+</div>
+
+<div class="app scr" id="scPainel" hidden>
+  <div class="top"><button type="button" class="back" id="backP">‹ Início</button></div>
+  <h2>Painel</h2>
+  <div class="flt"><label>De<input type="date" id="pf"></label><label>Até<input type="date" id="pt"></label></div>
+  <div class="chips"><button type="button" data-q="hoje">Hoje</button><button type="button" data-q="7">7 dias</button><button type="button" data-q="mes">Este mês</button><button type="button" data-q="tudo">Tudo</button></div>
+  <div id="pOut"></div>
 </div>
 
 <div id="hid"><div class="sheet" id="sheet">
   <div class="head"><img alt="INDACON" src="data:image/jpeg;base64,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"><h1>MONITORAMENTO UNIDADE RONDONÓPOLIS</h1></div>
   <div class="sub">DETALHAMENTO DE PRODUÇÃO DIÁRIA</div>
   <div class="panels" id="panels"></div>
-</div></div>
+</div><div id="rep"></div></div>
 
-<div class="foot">
-  <button id="btnClear" type="button">Limpar tudo</button>
-  <button id="btnShare" type="button">Compartilhar PDF</button>
+<div class="foot" id="foot">
+  <button type="button" id="btnSave">Salvar</button>
+  <button type="button" id="btnShare">Compartilhar PDF</button>
 </div>
+<div class="foot" id="foot2"><button type="button" id="btnShareP">Compartilhar PDF do painel</button></div>
 <div id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -133,30 +197,30 @@ const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??"").replace(/[&"<>]/g,c=>({"&":"&amp;",'"':"&quot;","<":"&lt;",">":"&gt;"}[c]));
 const pct=(v,d=0)=>(v*100).toFixed(d).replace(".",",")+"%";
 const fmtData=v=>{if(!v)return"";const[a,m,d]=v.split("-");return `${d}-${MES[+m-1]}`};
-const hoje=()=>{const t=new Date();return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`};
+const dataBR=v=>{const[a,m,d]=v.split("-");return `${d}/${m}/${a}`};
+const iso=t=>`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+const hoje=()=>iso(new Date());
 const num=v=>(v===""||v==null)?null:Number(v);
-let S={date:"",p:{},x:[]};
+const clone=o=>JSON.parse(JSON.stringify(o));
+let S={date:"",p:{},x:[]},DB={days:{}},dirty=false;
 
+/* ---------- cálculo ---------- */
 const filled=x=>String(x.n).trim()||num(x.m)!=null||num(x.p)!=null;
 function miss(x){const a=[];if(!String(x.n).trim())a.push("nome");if(num(x.m)==null)a.push("meta");if(num(x.p)==null)a.push("produção");return a}
-function rows(s){
-  const b=PRODUTOS.map(([n,m],i)=>({n,m,raw:S.p[s.k+i]??"",p:+S.p[s.k+i]||0}));
-  const e=S.x.filter(x=>x.sec===s.k&&filled(x)).map(x=>({n:String(x.n).trim()||"(sem nome)",m:num(x.m)||0,raw:x.p,p:num(x.p)||0,id:x.id,x}));
-  return b.map(r=>({...r,i:1})).concat(e);
+function rows(s,R=S){
+  const b=PRODUTOS.map(([n,m],i)=>({n,m,raw:R.p[s.k+i]??"",p:+R.p[s.k+i]||0,i:1}));
+  const e=R.x.filter(x=>x.sec===s.k&&filled(x)).map(x=>({n:String(x.n).trim()||"(sem nome)",m:num(x.m)||0,raw:x.p,p:num(x.p)||0,id:x.id,x}));
+  return b.concat(e);
 }
 const eff=r=>r.m>0?r.p/r.m:null;
-function calc(){
-  const T={},O={};
-  SEC.forEach(s=>{const v=rows(s).map(eff).filter(e=>e!==null);T[s.k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:0});
-  ["L","R"].forEach(id=>O[id]=(T[id+"a"]+T[id+"b"])/2);
-  return{T,O};
-}
+const avg=a=>{const v=a.filter(e=>e!==null);return v.length?v.reduce((x,y)=>x+y,0)/v.length:0};
+function calc(R=S){const T={},O={};SEC.forEach(s=>T[s.k]=avg(rows(s,R).map(eff)));["L","R"].forEach(id=>O[id]=(T[id+"a"]+T[id+"b"])/2);return{T,O}}
 
+/* ---------- formulário ---------- */
 function montarForm(){
   $("#form").innerHTML=SEC.map(s=>`<div class="card ${s.arm?"arm":""}"><h3>${s.t}</h3>`+
    PRODUTOS.map(([n,m],i)=>`<div class="row"><div class="n">${n.replace(" FMF","")}<small>meta: ${m}</small></div>
-   <input type="number" inputmode="numeric" min="0" data-f="${s.k}${i}" placeholder="0" aria-label="${s.t} ${n}"><div class="ef" id="f${s.k}${i}">0%</div></div>`).join("")+
-   `<div id="xx-${s.k}"></div></div>`).join("");
+   <input type="number" inputmode="numeric" min="0" data-f="${s.k}${i}" placeholder="0" aria-label="${s.t} ${n}"><div class="ef" id="f${s.k}${i}">0%</div></div>`).join("")+`</div>`).join("");
 }
 function renderExtras(){
   $("#extras").innerHTML=S.x.map((x,n)=>`<div class="card"><h3>Produto adicionado ${n+1}</h3><div class="xrow">
@@ -167,80 +231,192 @@ function renderExtras(){
    <div class="warn" id="xw${x.id}"></div></div></div>`).join("");
 }
 function sheetSec(s){
-  const rs=rows(s),e=rs.map(eff),v=e.filter(a=>a!==null),t=v.length?v.reduce((a,b)=>a+b,0)/v.length:0;
+  const rs=rows(s),e=rs.map(eff);
   return `<table><colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>
   <tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
   rs.map((r,i)=>`<tr>${i?"":`<td class="pista" rowspan="${rs.length}">${s.pista}</td>`}<td class="nm">${esc(r.n)}</td><td>${r.m||""}</td><td class="in">${esc(r.raw)}</td><td>${e[i]===null?"-":pct(e[i])}</td></tr>`).join("")+
-  `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td>${pct(t)}</td></tr></table>`;
+  `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência da Equipe</td><td>${pct(avg(e))}</td></tr></table>`;
 }
 function renderSheet(O){
   $("#panels").innerHTML=["L","R"].map(id=>{const [a,b]=SEC.filter(s=>s.pid===id);
    return `<div class="panel"><div class="ref"><span class="lb">Referência:</span><span class="dt">${fmtData(S.date)}</span></div>${sheetSec(a)}<div class="bar"></div>${sheetSec(b)}<div class="obra"><span>Eficiência da Obra</span><b>${pct(O[id],1)}</b></div></div>`}).join("");
 }
 function update(){
-  const {T,O}=calc();
-  SEC.forEach(s=>rows(s).forEach((r,i)=>{const e=eff(r);
-    if(r.i)$(`#f${s.k}${i}`).textContent=e===null?"-":pct(e);}));
+  const {O}=calc();
+  SEC.forEach(s=>rows(s).forEach((r,i)=>{if(r.i){const e=eff(r);$(`#f${s.k}${i}`).textContent=e===null?"-":pct(e)}}));
   S.x.forEach(x=>{const m=num(x.m)||0,v=num(x.p)||0;$("#xe"+x.id).textContent=m>0?pct(v/m):"-";
     const f=miss(x);$("#xw"+x.id).textContent=filled(x)&&f.length?"⚠ Falta preencher: "+f.join(", "):""});
   $("#rL").textContent=pct(O.L,1);$("#rR").textContent=pct(O.R,1);
   renderSheet(O);
-  try{localStorage.setItem("mon-rdo2",JSON.stringify(S))}catch(e){}
+  setSt();
+  try{localStorage.setItem("mon-draft",JSON.stringify(S))}catch(e){}
 }
-function carregar(){
-  try{const o=JSON.parse(localStorage.getItem("mon-rdo2")||"null");if(o)S={date:o.date||"",p:o.p||{},x:o.x||[]}}catch(e){}
-  S.date=S.date||hoje();$("#fd").value=S.date;
+const salvo=()=>!dirty&&!!DB.days[S.date];
+function setSt(){const e=$("#saveSt"),ok=salvo();e.textContent=ok?"✓ Salvo":"● Não salvo";e.style.color=ok?"#2e7d32":"#b26a00";$("#btnShare").classList.toggle("off",!ok)}
+function loadDay(d){
+  let dr=null;try{dr=JSON.parse(localStorage.getItem("mon-draft")||"null")}catch(e){}
+  const r=DB.days[d]||(dr&&dr.date===d?dr:null)||{p:{},x:[]};
+  S={date:d,p:clone(r.p||{}),x:clone(r.x||[])};
+  $("#fd").value=d;
   document.querySelectorAll("[data-f]").forEach(i=>i.value=S.p[i.dataset.f]??"");
-  renderExtras();
+  renderExtras();dirty=false;update();
 }
+
+/* ---------- telas ---------- */
+function show(id){document.querySelectorAll(".scr").forEach(e=>e.hidden=e.id!==id);$("#foot").classList.toggle("on",id==="scForm");$("#foot2").classList.toggle("on",id==="scPainel");window.scrollTo(0,0)}
+function toast(t,ms=2800){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),ms)}
+function goHome(){infoBackup();show("scHome")}
+
 document.addEventListener("input",e=>{const t=e.target;
+  if(t.id==="fd"){
+    if(dirty&&!confirm("Tem alterações não salvas neste dia. Trocar de data mesmo assim?")){t.value=S.date;return}
+    loadDay(t.value||hoje());return}
   if(t.dataset.f)S.p[t.dataset.f]=t.value;
   else if(t.dataset.x){const x=S.x.find(a=>String(a.id)===t.dataset.x);if(x)x[t.dataset.c]=t.value}
-  else if(t.id==="fd")S.date=t.value||hoje();
   else return;
-  update();});
-document.addEventListener("click",e=>{const d=e.target.closest("[data-del]");if(!d)return;
-  if(!confirm("Remover este produto?"))return;
-  S.x=S.x.filter(a=>String(a.id)!==d.dataset.del);renderExtras();update();});
-$("#btnClear").onclick=()=>{if(!confirm("Limpar toda a produção digitada e os produtos adicionados?"))return;
-  S.p={};S.x=[];document.querySelectorAll("[data-f]").forEach(i=>i.value="");renderExtras();update();};
-
-$("#btnAdd").onclick=()=>{
-  const x={id:Date.now(),sec:"La",n:"",m:"",p:""};S.x.push(x);renderExtras();update();
+  dirty=true;update();});
+document.addEventListener("click",e=>{
+  const d=e.target.closest("[data-del]");
+  if(d){if(!confirm("Remover este produto?"))return;S.x=S.x.filter(a=>String(a.id)!==d.dataset.del);renderExtras();dirty=true;update();return}
+  const o=e.target.closest("[data-open]");if(o){loadDay(o.dataset.open);show("scForm");return}
+  const q=e.target.closest("[data-q]");if(q)quick(q.dataset.q);});
+$("#btnClear").onclick=()=>{if(!confirm("Limpar toda a produção digitada e os produtos adicionados deste dia?"))return;
+  S.p={};S.x=[];document.querySelectorAll("[data-f]").forEach(i=>i.value="");renderExtras();dirty=true;update();};
+$("#btnAdd").onclick=()=>{const x={id:Date.now(),sec:"La",n:"",m:"",p:""};S.x.push(x);renderExtras();dirty=true;update();
   const el=document.querySelector(`[data-x="${x.id}"][data-c="n"]`);el.scrollIntoView({block:"center"});el.focus();};
+$("#goForm").onclick=()=>{loadDay(hoje());show("scForm");if(DB.days[hoje()])toast("Já existe registro de hoje. Carregado para continuar.",3500)};
+$("#goPainel").onclick=()=>{if(!$("#pf").value&&!$("#pt").value)quick("mes");else renderPainel();show("scPainel")};
+$("#backF").onclick=()=>{if(dirty&&!confirm("Tem informações não salvas. Voltar mesmo assim?"))return;dirty=false;goHome()};
+$("#backP").onclick=goHome;
+$("#pf").oninput=$("#pt").oninput=renderPainel;
+window.addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
 
-function toast(t,ms=2800){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),ms)}
+/* ---------- painel ---------- */
+function quick(q){
+  const t=new Date(),a=new Date();
+  if(q==="7")a.setDate(t.getDate()-6);else if(q==="mes")a.setDate(1);
+  $("#pf").value=q==="tudo"?"":iso(a);$("#pt").value=q==="tudo"?"":iso(t);
+  if(q==="hoje"){$("#pf").value=$("#pt").value=hoje()}
+  renderPainel();
+}
+function dados(){
+  const f=$("#pf").value,t=$("#pt").value;
+  const ds=Object.keys(DB.days).filter(d=>(!f||d>=f)&&(!t||d<=t)).sort();
+  let sL=0,sR=0;const agg={},tS={};SEC.forEach(s=>{agg[s.k]=new Map();tS[s.k]=0});
+  const list=ds.map(d=>{const R=DB.days[d],{T,O}=calc(R);sL+=O.L;sR+=O.R;const tot={};
+    SEC.forEach(s=>{tS[s.k]+=T[s.k];tot[s.k]=0;rows(s,R).forEach(r=>{tot[s.k]+=r.p;const a=agg[s.k].get(r.n)||{p:0,m:0};a.p+=r.p;a.m+=r.m;agg[s.k].set(r.n,a)})});
+    return{d,T,O,tot}});
+  return{ds,list,agg,tS,sL,sR,n:ds.length};
+}
+function renderPainel(){
+  const {ds,list,agg,sL,sR,n}=dados();
+  if(!n){$("#pOut").innerHTML='<div class="empty">Nenhum registro neste período.</div>';return}
+  let h=`<div class="res"><div><b>${n}</b><span>${n===1?"dia registrado":"dias registrados"}</span></div></div>
+   <div class="res" style="margin-top:8px"><div><b>${pct(sL/n,1)}</b><span>Obra – Concretagem (média)</span></div><div><b>${pct(sR/n,1)}</b><span>Obra – Central (média)</span></div></div>
+   <div class="step">Totais no período</div>`;
+  SEC.forEach(s=>{let tot=0,tm=0;
+    const r=[...agg[s.k]].map(([nm,a])=>{tot+=a.p;tm+=a.m;return `<div class="pr"><span>${esc(nm.replace(" FMF",""))}<br><small>meta ${a.m}</small></span><span style="text-align:right"><b>${a.p}</b><br><small>${a.m>0?pct(a.p/a.m):"-"}</small></span></div>`}).join("");
+    h+=`<div class="card ${s.arm?"arm":""}"><h3>${s.t}</h3>${r}<div class="pr tot"><span>Total produzido</span><span>${tot}</span></div></div>`});
+  h+=`<div class="step">Dias (toque para abrir)</div>`+list.reverse().map(x=>`<button type="button" class="day" data-open="${x.d}"><b>${dataBR(x.d)}</b><span>Concretagem ${pct(x.O.L,1)} · Central ${pct(x.O.R,1)}</span></button>`).join("");
+  $("#pOut").innerHTML=h;
+}
 
-async function gerarPDF(){
-  const canvas=await html2canvas($("#sheet"),{scale:2,backgroundColor:"#ffffff",windowWidth:1200,onclone:doc=>{
-    doc.getElementById("hid").style.cssText="position:static;width:auto;height:auto;overflow:visible";
-    doc.getElementById("sheet").classList.add("pdf");}});
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
-  const w=pdf.internal.pageSize.getWidth()-12,h=canvas.height*w/canvas.width;
-  pdf.addImage(canvas.toDataURL("image/jpeg",0.95),"JPEG",6,8,w,h);
+/* ---------- armazenamento no navegador + backup ---------- */
+const KEY="mon-db-local";
+function carregarDB(){try{DB=JSON.parse(localStorage.getItem(KEY)||"null")||{days:{}}}catch(e){DB={days:{}}}DB.days=DB.days||{}}
+async function persist(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function infoBackup(){const l=localStorage.getItem("mon-lastbk"),n=Object.keys(DB.days).length;
+  $("#bkInfo").innerHTML=`${n} ${n===1?"dia salvo":"dias salvos"} neste aparelho.<br>`+(l?`Último backup: ${dataBR(l)}`:"<b class='warn'>⚠ Ainda não baixou nenhum backup.</b>")}
+$("#bkDown").onclick=()=>{
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:"application/json"}));
+  a.download=`Monitoramento_dados_${hoje()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  localStorage.setItem("mon-lastbk",hoje());infoBackup();toast("Arquivo baixado. Guarde em um lugar seguro.",3500)};
+$("#bkUp").onclick=()=>$("#bkFile").click();
+$("#bkFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{const o=JSON.parse(await f.text());if(!o||typeof o.days!=="object")throw 0;const n=Object.keys(o.days).length;
+    if(!confirm(`Este arquivo tem ${n} dia(s). Carregar e juntar com os dados deste aparelho?
+(Dias com a mesma data serão substituídos pelos do arquivo.)`))return;
+    Object.assign(DB.days,o.days);await persist();infoBackup();toast("✓ Dados carregados.")}
+  catch(err){toast("Arquivo inválido. Escolha um backup baixado por este aplicativo.",4500)}};
+
+$("#btnSave").onclick=async()=>{
+  const b=$("#btnSave");b.disabled=true;b.textContent="Salvando…";
+  try{
+    DB.days[S.date]={p:clone(S.p),x:clone(S.x.filter(filled))};
+    await persist();dirty=false;setSt();
+    toast("✓ Salvo neste aparelho.");
+  }catch(e){console.error(e);toast("Não foi possível salvar neste aparelho. Baixe um backup e tente de novo.",4500)}
+  b.disabled=false;b.textContent="Salvar";
+};
+
+/* ---------- PDF ---------- */
+function relatorio(){
+  const D=dados(),{list,agg,tS,sL,sR,n}=D;
+  const logo=$("#sheet .head img").src,g=new Date();
+  const per=`${dataBR($("#pf").value||D.ds[0])} a ${dataBR($("#pt").value||D.ds[n-1])}`;
+  const ger=`${dataBR(iso(g))} ${String(g.getHours()).padStart(2,"0")}:${String(g.getMinutes()).padStart(2,"0")}`;
+  const cab=sub=>`<div class="head"><img alt="" src="${logo}"><h1>MONITORAMENTO UNIDADE RONDONÓPOLIS</h1></div><div class="sub">${sub}</div>`;
+  const colg='<colgroup><col style="width:17%"><col style="width:41%"><col style="width:11%"><col style="width:15%"><col style="width:16%"></colgroup>';
+  const sec=s=>{const e=[...agg[s.k]];return `<table>${colg}<tr class="hd"><td>Pista</td><td>Produto</td><td>Meta</td><td>Produção</td><td>Eficiência</td></tr>`+
+    e.map(([nm,a],i)=>`<tr>${i?"":`<td class="pista" rowspan="${e.length}">${s.pista}</td>`}<td class="nm">${esc(nm)}</td><td>${a.m||""}</td><td class="in">${a.p}</td><td>${a.m>0?pct(a.p/a.m):"-"}</td></tr>`).join("")+
+    `<tr class="team"><td class="e0"></td><td colspan="3">Eficiência média da Equipe</td><td>${pct(tS[s.k]/n)}</td></tr></table>`};
+  const painel=(id,O)=>{const [a,b]=SEC.filter(s=>s.pid===id);
+    return `<div class="panel"><div class="ref"><span class="lb">Período:</span><span class="dt">${per}</span></div>${sec(a)}<div class="bar"></div>${sec(b)}<div class="obra"><span>Eficiência média da Obra</span><b>${pct(O/n,1)}</b></div></div>`};
+  const kp=`<div class="kp"><div><i>Dias registrados</i><b>${n}</b></div><div><i>Obra – Concretagem (média)</i><b>${pct(sL/n,1)}</b></div><div><i>Obra – Central de Betoneiras (média)</i><b>${pct(sR/n,1)}</b></div></div>`;
+  const cel=(t,e)=>`${t} · ${pct(e)}`;
+  const lin=list.map(x=>`<tr><td>${dataBR(x.d)}</td><td>${cel(x.tot.La,x.T.La)}</td><td>${cel(x.tot.Lb,x.T.Lb)}</td><td class="ob">${pct(x.O.L,1)}</td><td>${cel(x.tot.Ra,x.T.Ra)}</td><td>${cel(x.tot.Rb,x.T.Rb)}</td><td class="ob">${pct(x.O.R,1)}</td></tr>`);
+  const sm=k=>list.reduce((a,x)=>a+x.tot[k],0);
+  lin.push(`<tr class="tt"><td>Período</td><td>${cel(sm("La"),tS.La/n)}</td><td>${cel(sm("Lb"),tS.Lb/n)}</td><td class="ob">${pct(sL/n,1)}</td><td>${cel(sm("Ra"),tS.Ra/n)}</td><td>${cel(sm("Rb"),tS.Rb/n)}</td><td class="ob">${pct(sR/n,1)}</td></tr>`);
+  const th=`<thead><tr><td>Data</td><td>Concretagem<br><small>produzido · efic.</small></td><td>Armação<br><small>produzido · efic.</small></td><td>Obra<br><small>Concretagem</small></td><td>Central de Betoneiras<br><small>produzido · efic.</small></td><td>Armação<br><small>produzido · efic.</small></td><td>Obra<br><small>Central</small></td></tr></thead>`;
+  const cg='<colgroup><col style="width:12%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:15%"><col style="width:15%"><col style="width:14%"></colgroup>';
+  const ch=[];for(let i=0;i<lin.length;i+=22)ch.push(lin.slice(i,i+22));
+  const tp=1+ch.length,pf=i=>`<div class="pf">Gerado em ${ger} · Página ${i} de ${tp}</div>`;
+  let out=`<div class="pg">${cab("RELATÓRIO GERAL DE PRODUÇÃO — "+per)}${kp}<div class="panels">${painel("L",sL)}${painel("R",sR)}</div>${pf(1)}</div>`;
+  ch.forEach((c,i)=>out+=`<div class="pg">${cab("DETALHAMENTO POR DIA — "+per)}<table class="rt">${cg}${th}<tbody>${c.join("")}</tbody></table>${pf(i+2)}</div>`);
+  return out;
+}
+async function pdfDe(els){
+  const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+  for(let i=0;i<els.length;i++){
+    const c=await html2canvas(els[i],{scale:2,backgroundColor:"#ffffff",windowWidth:1200,onclone:doc=>{
+      doc.getElementById("hid").style.cssText="position:static;width:auto;height:auto;overflow:visible";
+      const s=doc.getElementById("sheet");if(s)s.classList.add("pdf");}});
+    let w=285,h=c.height*w/c.width;if(h>198){w=w*198/h;h=198}
+    if(i)pdf.addPage();pdf.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",(297-w)/2,6,w,h);
+  }
   return pdf.output("blob");
 }
+async function enviar(blob,nome){
+  const file=new File([blob],nome,{type:"application/pdf"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:nome.replace(/_/g," ").replace(".pdf","")});}
+    catch(err){if(err.name!=="AbortError")throw err;}
+  }else{
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nome;
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    toast("Compartilhamento indisponível neste navegador: PDF baixado.");
+  }
+}
+$("#btnShareP").onclick=async()=>{
+  const D=dados();if(!D.n){toast("Não há registros neste período para gerar o PDF.",3500);return}
+  const b=$("#btnShareP");b.disabled=true;b.textContent="Gerando PDF…";
+  try{
+    $("#rep").innerHTML=relatorio();
+    await enviar(await pdfDe([...document.querySelectorAll("#rep .pg")]),`Relatorio_Rondonopolis_${D.ds[0]}_a_${D.ds[D.n-1]}.pdf`);
+  }catch(err){console.error(err);toast("Não foi possível gerar o PDF. Verifique a conexão e tente de novo.",4000)}
+  $("#rep").innerHTML="";b.disabled=false;b.textContent="Compartilhar PDF do painel";
+};
 $("#btnShare").onclick=async()=>{
+  if(!salvo()){toast("Antes de compartilhar, toque em Salvar.",3500);return}
   const f=S.x.filter(filled).map(x=>({x,m:miss(x)})).filter(a=>a.m.length);
   if(f.length&&!confirm("Atenção, tem produto adicionado com informação faltando:\n\n"+f.map(a=>"• "+(String(a.x.n).trim()||"(sem nome)")+": falta "+a.m.join(", ")).join("\n")+"\n\nGerar o PDF mesmo assim?"))return;
   const b=$("#btnShare");b.disabled=true;b.textContent="Gerando PDF…";
   try{
-    const blob=await gerarPDF();
-    const nome=`Monitoramento_Rondonopolis_${S.date||hoje()}.pdf`;
-    const file=new File([blob],nome,{type:"application/pdf"});
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      try{await navigator.share({files:[file],title:"Monitoramento Unidade Rondonópolis"});}
-      catch(err){if(err.name!=="AbortError")throw err;}
-    }else{
-      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=nome;
-      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-      toast("Compartilhamento indisponível neste navegador: PDF baixado.");
-    }
+    await enviar(await pdfDe([$("#sheet")]),`Monitoramento_Rondonopolis_${S.date||hoje()}.pdf`);
   }catch(err){console.error(err);toast("Não foi possível gerar o PDF. Verifique a conexão e tente de novo.",4000);}
   b.disabled=false;b.textContent="Compartilhar PDF";
 };
-montarForm();carregar();update();
+montarForm();carregarDB();goHome();
 </script>
 </body>
 </html>
